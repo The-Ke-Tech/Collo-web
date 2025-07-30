@@ -43,36 +43,47 @@ const Login: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!data.email || !data.password) {
-      toast.error('Email and password are required');
+  if (!data.email || !data.password) {
+    toast.error('Email and password are required');
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    let result: LoginResponse;
+    try {
+      result = await response.json();
+    } catch {
+      toast.error('Server error: Invalid response');
       return;
     }
 
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      const result: LoginResponse = await response.json();
-
-      if (result.success) {
-        toast.success(result.message);
-        fetchUserDetails();
-        fetchUserAddToCart();
-        router.push('/');
-      } else {
-        toast.error(result.message || 'Login failed');
-      }
-    } catch (error: unknown) {
-      const err = error as { message?: string };
-      toast.error(err.message || 'An error occurred');
+    if (!response.ok) {
+      toast.error(result.message || 'Login failed');
+      return;
     }
-  };
+
+    if (result.success) {
+      toast.success(result.message);
+      fetchUserDetails();
+      fetchUserAddToCart();
+      router.push('/');
+    } else {
+      toast.error(result.message || 'Login failed');
+    }
+  } catch (error: unknown) {
+    console.error("Login error:", error);
+    toast.error('Unable to connect to server. Try again later.');
+  }
+};
 
   return (
     <section id="login" className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-200">
