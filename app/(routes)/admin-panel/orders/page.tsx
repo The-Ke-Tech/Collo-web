@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const SHIPPING_STAGES = ["PENDING", "PACKING", "SHIPPED", "IN_TRANSIT", "DELIVERED", "CANCELLED"] as const;
-
 type ShippingStage = (typeof SHIPPING_STAGES)[number];
 
 interface Product {
@@ -93,8 +92,8 @@ export default function Orders() {
 
   const renderTable = (tableOrders: Order[], withActions: boolean) => (
     <div className="overflow-x-auto">
-      <table className="w-full border text-sm">
-        <thead className="bg-gray-100">
+      <table className="w-full border border-gray-700 text-sm text-gray-300">
+        <thead className="bg-gray-800 text-gray-300">
           <tr>
             <th className="px-3 py-2 text-left">Order ID</th>
             <th className="px-3 py-2">Customer</th>
@@ -108,20 +107,20 @@ export default function Orders() {
           {tableOrders.map((order) => (
             <React.Fragment key={order.id}>
               <tr
-                className="border-b hover:bg-gray-50 cursor-pointer"
+                className="border-b border-gray-700 hover:bg-gray-700 cursor-pointer"
                 onClick={() => setExpanded(expanded === order.id ? null : order.id)}
               >
                 <td className="px-3 py-2 font-mono">{order.id}</td>
                 <td className="px-3 py-2">{order.fullName || "Guest"}</td>
-                <td className="px-3 py-2 font-semibold">KES {order.totalAmount.toFixed(2)}</td>
+                <td className="px-3 py-2 font-semibold text-white">KES {order.totalAmount.toFixed(2)}</td>
                 <td className="px-3 py-2">
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${
                       order.shippingStage === "DELIVERED"
-                        ? "bg-green-100 text-green-700"
+                        ? "bg-green-700 text-green-200"
                         : order.shippingStage === "CANCELLED"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-yellow-100 text-yellow-700"
+                        ? "bg-red-700 text-red-200"
+                        : "bg-yellow-700 text-yellow-200"
                     }`}
                   >
                     {order.shippingStage}
@@ -134,7 +133,7 @@ export default function Orders() {
                       value={order.shippingStage}
                       disabled={updating === order.id}
                       onChange={(e) => updateShippingStage(order.id, e.target.value as ShippingStage)}
-                      className="border rounded p-1 text-xs"
+                      className="border border-gray-600 bg-gray-800 text-gray-300 rounded p-1 text-xs"
                     >
                       {SHIPPING_STAGES.map((stage) => (
                         <option key={stage} value={stage}>
@@ -146,13 +145,13 @@ export default function Orders() {
                 )}
               </tr>
               {expanded === order.id && (
-                <tr className="bg-gray-50">
+                <tr className="bg-gray-900">
                   <td colSpan={withActions ? 6 : 5} className="px-3 py-3">
                     <div>
-                      <h4 className="font-medium text-gray-700">Products:</h4>
+                      <h4 className="font-medium text-gray-200">Products:</h4>
                       <ul className="mt-2 space-y-1">
                         {order.productDetails.map((op) => (
-                          <li key={op.id} className="flex items-center justify-between border-b py-1">
+                          <li key={op.id} className="flex items-center justify-between border-b border-gray-700 py-1">
                             <div className="flex items-center gap-2">
                               <img
                                 src={op.product.productImage[0]}
@@ -160,15 +159,15 @@ export default function Orders() {
                                 alt={op.product.productName}
                               />
                               <div>
-                                <p className="font-medium">{op.product.productName}</p>
-                                <p className="text-sm text-gray-500">Qty: {op.quantity}</p>
+                                <p className="font-medium text-gray-100">{op.product.productName}</p>
+                                <p className="text-sm text-gray-400">Qty: {op.quantity}</p>
                               </div>
                             </div>
-                            <p className="font-semibold">KES {op.product.sellingPrice?.toFixed(2)}</p>
+                            <p className="font-semibold text-white">KES {op.product.sellingPrice?.toFixed(2)}</p>
                           </li>
                         ))}
                       </ul>
-                      <div className="mt-3 text-sm text-gray-600">
+                      <div className="mt-3 text-sm text-gray-400">
                         <p>
                           Address: {order.address}, {order.city}, {order.county}
                         </p>
@@ -189,17 +188,17 @@ export default function Orders() {
   );
 
   return (
-    <div className="bg-white shadow rounded-lg p-6">
+    <div className="bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-300 shadow rounded-lg p-6 min-h-screen">
       <div className="flex gap-4 mb-4">
         <button
           onClick={() => setTab("confirmed")}
-          className={`px-4 py-2 rounded ${tab === "confirmed" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+          className={`px-4 py-2 rounded ${tab === "confirmed" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600"}`}
         >
           Manage Shipping
         </button>
         <button
           onClick={() => setTab("all")}
-          className={`px-4 py-2 rounded ${tab === "all" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+          className={`px-4 py-2 rounded ${tab === "all" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600"}`}
         >
           All Orders
         </button>
@@ -209,7 +208,7 @@ export default function Orders() {
         <>
           <div className="flex gap-2 mb-4">
             <select
-              className="border rounded p-2 text-sm"
+              className="border border-gray-600 bg-gray-800 text-gray-300 rounded p-2 text-sm"
               value={shippingFilter}
               onChange={(e) => setShippingFilter(e.target.value)}
             >
@@ -221,12 +220,12 @@ export default function Orders() {
               ))}
             </select>
           </div>
-          {loading ? <p>Loading orders...</p> : renderTable(orders, true)}
+          {loading ? <p className="text-gray-400">Loading orders...</p> : renderTable(orders, true)}
           <div className="flex justify-between mt-4">
             <button
               disabled={page === 1}
               onClick={() => setPage((p) => p - 1)}
-              className="px-3 py-1 border rounded disabled:opacity-50"
+              className="px-3 py-1 border border-gray-600 bg-gray-800 text-gray-300 rounded disabled:opacity-50"
             >
               Prev
             </button>
@@ -236,7 +235,7 @@ export default function Orders() {
             <button
               disabled={page === totalPages}
               onClick={() => setPage((p) => p + 1)}
-              className="px-3 py-1 border rounded disabled:opacity-50"
+              className="px-3 py-1 border border-gray-600 bg-gray-800 text-gray-300 rounded disabled:opacity-50"
             >
               Next
             </button>
@@ -244,7 +243,7 @@ export default function Orders() {
         </>
       )}
 
-      {tab === "all" && (loading ? <p>Loading orders...</p> : renderTable(allOrders, false))}
+      {tab === "all" && (loading ? <p className="text-gray-400">Loading orders...</p> : renderTable(allOrders, false))}
     </div>
   );
 }

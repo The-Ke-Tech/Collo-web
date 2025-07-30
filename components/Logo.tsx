@@ -7,7 +7,7 @@ export const Logo = ({ height = 40, width = 40 }: { height?: number; width?: num
       height={height}
       width={width}
       alt="logo"
-      src="/logo.enc"
+      src="/logo.png"
       className="bg-white rounded-full p-1"
     />
   );

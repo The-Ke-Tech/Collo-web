@@ -125,7 +125,6 @@ const CheckoutPage = () => {
       });
 
       const data = await res.json();
-      console.log("Checkout response:", data);
       if (!res.ok) {
         toast.error(data?.error || "Failed to place order.");
         return;
@@ -144,15 +143,17 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-      <h2 className="text-2xl sm:text-3xl font-semibold mb-6 text-center">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-200 min-h-screen">
+      <h2 className="text-3xl font-semibold mb-6 text-center text-white">
         Checkout
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Shipping Form */}
-        <div className="bg-white p-4 sm:p-6 shadow rounded space-y-4">
-          <h3 className="text-lg font-medium mb-2">Shipping Information</h3>
+        <div className="bg-gray-900 p-6 shadow rounded space-y-4 border border-gray-700">
+          <h3 className="text-lg font-medium mb-2 text-white">
+            Shipping Information
+          </h3>
           <div className="grid grid-cols-1 gap-4">
             <input
               type="text"
@@ -160,7 +161,7 @@ const CheckoutPage = () => {
               placeholder="Full Name"
               value={shippingInfo.fullName}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2"
+              className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-red-500"
               required
             />
             <input
@@ -169,7 +170,7 @@ const CheckoutPage = () => {
               placeholder="Phone Number"
               value={shippingInfo.phone}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2"
+              className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-red-500"
               required
             />
             <input
@@ -178,7 +179,7 @@ const CheckoutPage = () => {
               placeholder="Address (Street, Building)"
               value={shippingInfo.address}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2"
+              className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-red-500"
               required
             />
             <input
@@ -187,7 +188,7 @@ const CheckoutPage = () => {
               placeholder="County"
               value={shippingInfo.county}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2"
+              className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-red-500"
               required
             />
             <input
@@ -196,19 +197,21 @@ const CheckoutPage = () => {
               placeholder="Town/City"
               value={shippingInfo.city}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2"
+              className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-red-500"
               required
             />
           </div>
         </div>
 
         {/* Order Summary */}
-        <div className="bg-white p-4 sm:p-6 shadow rounded flex flex-col justify-between">
+        <div className="bg-gray-900 p-6 shadow rounded flex flex-col justify-between border border-gray-700">
           <div>
-            <h3 className="text-lg font-medium mb-3">Order Summary</h3>
-            <ul className="divide-y divide-slate-200 text-sm">
+            <h3 className="text-lg font-medium mb-3 text-white">
+              Order Summary
+            </h3>
+            <ul className="divide-y divide-gray-700 text-sm">
               {items.map((item, idx) => (
-                <li key={idx} className="py-2 flex justify-between">
+                <li key={idx} className="py-2 flex justify-between text-gray-300">
                   <span>
                     {item.productId.productName} × {item.quantity}
                   </span>
@@ -221,14 +224,14 @@ const CheckoutPage = () => {
               ))}
             </ul>
 
-            <div className="flex justify-between mt-4 font-semibold text-base">
+            <div className="flex justify-between mt-4 font-semibold text-base text-white">
               <span>Total</span>
               <span>{displayKESCurrency(totalPrice)}</span>
             </div>
           </div>
 
           <button
-            className="mt-6 bg-green-600 hover:bg-green-700 text-white w-full py-3 rounded text-lg"
+            className="mt-6 bg-green-600 hover:bg-green-700 text-white w-full py-3 rounded text-lg shadow"
             onClick={handleConfirmAndPay}
           >
             Confirm & Pay via M-Pesa

@@ -25,19 +25,20 @@ const AllProducts = () => {
   }, []);
 
   return (
-    <div>
-      <div className="bg-white py-2 px-4 flex justify-between items-center">
-        <h2 className="font-bold text-lg">All Products</h2>
+    <div className="bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-300 min-h-screen p-4">
+      {/* Header */}
+      <div className="bg-gray-900 border border-gray-700 py-3 px-4 flex justify-between items-center rounded-lg shadow-md">
+        <h2 className="font-bold text-lg text-white">All Products</h2>
         <button
-          className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-all py-1 px-3 rounded-full"
+          className="border-2 border-blue-500 text-blue-500 hover:bg-blue-600 hover:text-white transition-all py-1 px-4 rounded-full"
           onClick={() => setOpenUploadProduct(true)}
         >
           Upload Product
         </button>
       </div>
 
-      {/* All products */}
-      <div className="flex items-center flex-wrap gap-5 py-4 h-[calc(100vh-190px)] overflow-y-scroll">
+      {/* All products grid */}
+      <div className="flex items-center flex-wrap gap-5 py-6 h-[calc(100vh-200px)] overflow-y-auto">
         {allProduct.map((product, index) => (
           <AdminProductCard
             data={product}

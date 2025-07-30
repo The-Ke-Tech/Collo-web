@@ -82,9 +82,9 @@ export default function RevenuePage() {
   };
 
   return (
-    <div className="bg-white rounded-md shadow-md p-6">
+    <div className="bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-300 rounded-md shadow-md p-6 min-h-screen">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold">💰 Revenue Dashboard</h2>
+        <h2 className="text-2xl font-semibold text-white">💰 Revenue Dashboard</h2>
         <div className="flex gap-2">
           <button
             onClick={exportPDF}
@@ -94,7 +94,7 @@ export default function RevenuePage() {
           </button>
           <button
             onClick={() => setChartType(chartType === "line" ? "bar" : "line")}
-            className="px-4 py-2 bg-gray-600 text-white rounded shadow hover:bg-gray-700"
+            className="px-4 py-2 bg-gray-700 text-gray-300 rounded shadow hover:bg-gray-600"
           >
             Switch to {chartType === "line" ? "Bar" : "Line"} Chart
           </button>
@@ -108,7 +108,9 @@ export default function RevenuePage() {
             key={opt}
             onClick={() => setRange(opt)}
             className={`px-4 py-2 rounded-md border text-sm ${
-              range === opt ? "bg-black text-white" : "bg-gray-100"
+              range === opt
+                ? "bg-blue-600 text-white"
+                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
             }`}
           >
             {opt.toUpperCase()}
@@ -118,34 +120,34 @@ export default function RevenuePage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="p-4 bg-green-100 rounded shadow">
-          <h3 className="text-lg font-medium">Total Revenue</h3>
-          <p className="text-2xl font-bold text-green-700">KES {data.totalRevenue.toFixed(2)}</p>
+        <div className="p-4 bg-green-900 rounded shadow">
+          <h3 className="text-lg font-medium text-green-200">Total Revenue</h3>
+          <p className="text-2xl font-bold text-green-400">KES {data.totalRevenue.toFixed(2)}</p>
         </div>
-        <div className="p-4 bg-blue-100 rounded shadow">
-          <h3 className="text-lg font-medium">Total Orders</h3>
-          <p className="text-2xl font-bold text-blue-700">{data.orders.length}</p>
+        <div className="p-4 bg-blue-900 rounded shadow">
+          <h3 className="text-lg font-medium text-blue-200">Total Orders</h3>
+          <p className="text-2xl font-bold text-blue-400">{data.orders.length}</p>
         </div>
       </div>
 
       {/* Revenue Chart */}
       <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-3">Revenue Over Time</h3>
+        <h3 className="text-lg font-semibold mb-3 text-white">Revenue Over Time</h3>
         <ResponsiveContainer width="100%" height={300}>
           {chartType === "line" ? (
             <LineChart data={data.chartData}>
-              <Line type="monotone" dataKey="revenue" stroke="#4f46e5" strokeWidth={3} />
-              <CartesianGrid stroke="#e5e7eb" />
-              <XAxis dataKey="date" />
-              <YAxis />
+              <Line type="monotone" dataKey="revenue" stroke="#60a5fa" strokeWidth={3} />
+              <CartesianGrid stroke="#374151" />
+              <XAxis dataKey="date" stroke="#9ca3af" />
+              <YAxis stroke="#9ca3af" />
               <Tooltip />
             </LineChart>
           ) : (
             <BarChart data={data.chartData}>
-              <Bar dataKey="revenue" fill="#4f46e5" />
-              <CartesianGrid stroke="#e5e7eb" />
-              <XAxis dataKey="date" />
-              <YAxis />
+              <Bar dataKey="revenue" fill="#60a5fa" />
+              <CartesianGrid stroke="#374151" />
+              <XAxis dataKey="date" stroke="#9ca3af" />
+              <YAxis stroke="#9ca3af" />
               <Tooltip />
             </BarChart>
           )}
@@ -153,10 +155,10 @@ export default function RevenuePage() {
       </div>
 
       {/* Orders Table */}
-      <h3 className="text-lg font-semibold mb-3">Recent Orders</h3>
+      <h3 className="text-lg font-semibold mb-3 text-white">Recent Orders</h3>
       <div className="overflow-x-auto">
-        <table className="w-full border text-sm">
-          <thead className="bg-gray-100">
+        <table className="w-full border border-gray-700 text-sm text-gray-300">
+          <thead className="bg-gray-800 text-gray-300">
             <tr>
               <th className="px-3 py-2 text-left">Order ID</th>
               <th className="px-3 py-2">Customer</th>
@@ -168,19 +170,19 @@ export default function RevenuePage() {
           </thead>
           <tbody>
             {data.orders.map((order) => (
-              <tr key={order.id} className="border-b hover:bg-gray-50">
+              <tr key={order.id} className="border-b border-gray-700 hover:bg-gray-700">
                 <td className="px-3 py-2 font-mono">{order.id}</td>
                 <td className="px-3 py-2">{order.fullName || "Guest"}</td>
-                <td className="px-3 py-2 font-semibold">KES {order.totalAmount.toFixed(2)}</td>
+                <td className="px-3 py-2 font-semibold text-white">KES {order.totalAmount.toFixed(2)}</td>
                 <td className="px-3 py-2">{order.paymentMethod.join(", ")}</td>
                 <td className="px-3 py-2">
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${
                       order.shippingStage === "DELIVERED"
-                        ? "bg-green-100 text-green-700"
+                        ? "bg-green-700 text-green-200"
                         : order.shippingStage === "CANCELLED"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-yellow-100 text-yellow-700"
+                        ? "bg-red-700 text-red-200"
+                        : "bg-yellow-700 text-yellow-200"
                     }`}
                   >
                     {order.shippingStage}

@@ -9,7 +9,6 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Context from '@/context';
 
-// ---------- TYPES ----------
 interface LoginFormData {
   email: string;
   password: string;
@@ -27,10 +26,7 @@ interface LoginResponse {
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [data, setData] = useState<LoginFormData>({
-    email: '',
-    password: '',
-  });
+  const [data, setData] = useState<LoginFormData>({ email: '', password: '' });
 
   const router = useRouter();
   const { fetchUserDetails, fetchUserAddToCart } = useContext(Context) as {
@@ -58,9 +54,7 @@ const Login: React.FC = () => {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
 
@@ -81,43 +75,43 @@ const Login: React.FC = () => {
   };
 
   return (
-    <section id="login">
+    <section id="login" className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-200">
       <div className="mx-auto container p-4">
-        <div className="bg-white p-5 w-full max-w-sm mx-auto">
+        <div className="bg-gray-900 p-6 rounded-2xl w-full max-w-sm mx-auto shadow-lg">
           <div className="w-20 h-20 mx-auto relative">
             <Image src={loginIcons} alt="login icon" fill className="object-contain" />
           </div>
 
-          <form className="pt-6 flex flex-col gap-2" onSubmit={handleSubmit}>
+          <form className="pt-6 flex flex-col gap-3" onSubmit={handleSubmit}>
             <div className="grid">
-              <label>Email:</label>
-              <div className="bg-slate-100 p-2">
+              <label className="mb-1 text-gray-300">Email:</label>
+              <div className="bg-gray-800 p-2 rounded">
                 <input
                   type="email"
                   placeholder="Enter email"
                   name="email"
                   value={data.email}
                   onChange={handleOnChange}
-                  className="w-full h-full outline-none bg-transparent"
+                  className="w-full h-full outline-none bg-transparent text-gray-100"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label>Password:</label>
-              <div className="bg-slate-100 p-2 flex items-center">
+              <label className="mb-1 text-gray-300">Password:</label>
+              <div className="bg-gray-800 p-2 flex items-center rounded">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Enter password"
                   name="password"
                   value={data.password}
                   onChange={handleOnChange}
-                  className="w-full h-full outline-none bg-transparent"
+                  className="w-full h-full outline-none bg-transparent text-gray-100"
                   required
                 />
                 <div
-                  className="cursor-pointer text-xl ml-2"
+                  className="cursor-pointer text-xl ml-2 text-gray-400 hover:text-gray-200"
                   onClick={() => setShowPassword((prev) => !prev)}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -125,7 +119,7 @@ const Login: React.FC = () => {
               </div>
               <Link
                 href="/forgot-password"
-                className="block w-fit ml-auto hover:underline hover:text-red-600"
+                className="block w-fit ml-auto text-gray-400 hover:text-red-500 hover:underline text-sm mt-1"
               >
                 Forgot password?
               </Link>
@@ -133,17 +127,17 @@ const Login: React.FC = () => {
 
             <button
               type="submit"
-              className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 w-full max-w-[150px] rounded-full hover:scale-110 transition-all mx-auto block mt-6"
+              className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 w-full max-w-[150px] rounded-full hover:scale-105 transition-all mx-auto block mt-6"
             >
               Login
             </button>
           </form>
 
-          <p className="my-5 text-center">
+          <p className="my-5 text-center text-gray-400">
             Don&apos;t have an account?{' '}
             <Link
               href="/sign-up"
-              className="text-red-600 hover:text-red-700 hover:underline"
+              className="text-red-500 hover:text-red-400 hover:underline"
             >
               Sign up
             </Link>

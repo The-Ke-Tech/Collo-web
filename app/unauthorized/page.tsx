@@ -26,20 +26,21 @@ export default function Unauthorized() {
   }, [router]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-center px-4">
-      <h1 className="text-3xl font-bold text-red-600">Access Denied</h1>
-      <p className="mt-2 text-gray-600">
+    <div className="flex flex-col items-center justify-center min-h-screen text-center px-4 bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-200">
+      <h1 className="text-4xl font-bold text-red-500">Access Denied</h1>
+      <p className="mt-2 text-gray-400">
         You do not have permission to view this page.
       </p>
       <div className="w-full max-w-md mt-6">
-        <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+        <div className="w-full h-3 bg-gray-700 rounded-full overflow-hidden shadow-inner">
           <div
-            className="h-full bg-blue-600 transition-all duration-50"
+            className="h-full bg-red-600 transition-all duration-50"
             style={{ width: `${progress}%` }}
           ></div>
         </div>
-        <p className="text-sm text-gray-500 mt-2">
-          Redirecting to homepage in {Math.ceil((5000 - (progress / 100) * 5000) / 1000)}s...
+        <p className="text-sm text-gray-400 mt-2">
+          Redirecting to homepage in{" "}
+          {Math.ceil((5000 - (progress / 100) * 5000) / 1000)}s...
         </p>
       </div>
     </div>

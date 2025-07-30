@@ -34,13 +34,21 @@ export const initiateMpesaStkPush = async ({
   const consumerKey = process.env.MPESA_CONSUMER_KEY!;
   const consumerSecret = process.env.MPESA_CONSUMER_SECRET!;
   const callbackUrl = process.env.MPESA_CALLBACK_URL!;
-
-  console.log("🔑 Using Shortcode:", shortcode);
-  console.log("🔑 Callback URL:", callbackUrl);
+  const env = process.env.MPESA_ENV || "sandbox"; // "sandbox" or "production"
 
   if (!shortcode || !passkey || !consumerKey || !consumerSecret) {
     throw new Error("Missing M-PESA credentials. Check environment variables.");
   }
+
+  // Select base URL based on environment
+  const baseUrl =
+    env === "production"
+      ? "https://api.safaricom.co.ke"
+      : "https://sandbox.safaricom.co.ke";
+
+  console.log(`🌍 Environment: ${env} | Base URL: ${baseUrl}`);
+  console.log("🔑 Using Shortcode:", shortcode);
+  console.log("🔑 Callback URL:", callbackUrl);
 
   // Normalize phone number
   const normalizedPhone = normalizePhoneNumber(phoneNumber);
@@ -59,7 +67,7 @@ export const initiateMpesaStkPush = async ({
     // Step 1: Get Access Token
     console.log("🔑 Requesting M-PESA Access Token...");
     const { data: tokenRes } = await axios.get(
-      "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
+      `${baseUrl}/oauth/v1/generate?grant_type=client_credentials`,
       {
         headers: {
           Authorization: `Basic ${authBuffer}`,
@@ -85,7 +93,7 @@ export const initiateMpesaStkPush = async ({
       PartyB: shortcode,
       PhoneNumber: normalizedPhone,
       CallBackURL: callbackUrl,
-      AccountReference: description, // Keep under 20 characters
+      AccountReference: description.slice(0, 20), // Safaricom limit: 20 chars
       TransactionDesc: description,
     };
 
@@ -93,7 +101,7 @@ export const initiateMpesaStkPush = async ({
 
     // Step 3: Send STK Push
     const stkPushRes = await axios.post(
-      "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+      `${baseUrl}/mpesa/stkpush/v1/processrequest`,
       stkPayload,
       {
         headers: {

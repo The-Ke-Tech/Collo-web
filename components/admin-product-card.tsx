@@ -10,9 +10,9 @@ interface AdminProductCardProps {
         id: string;
         productImage: string[];
         productName: string;
-        brandName: string;      // added
-        category: string;       // added
-        description: string;    // added
+        brandName: string;
+        category: string;
+        description: string;
         sellingPrice: number;
         price: number;
         stock: number;
@@ -48,21 +48,25 @@ const AdminProductCard: React.FC<AdminProductCardProps> = ({
     };
 
     return (
-        <div className='bg-white p-4 rounded'>
-            <div className='w-40'>
-                <div className='w-32 h-32 flex justify-center items-center'>
-                    <img src={data?.productImage[0]} className='mx-auto object-fill h-full' />
+        <div className="bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-200 p-4 rounded-lg shadow-lg">
+            <div className="w-40">
+                <div className="w-32 h-32 flex justify-center items-center bg-gray-800 rounded-md overflow-hidden">
+                    <img
+                        src={data?.productImage[0]}
+                        className="mx-auto object-cover h-full w-full"
+                        alt={data.productName}
+                    />
                 </div>
-                <h1 className='text-ellipsis line-clamp-2'>{data.productName}</h1>
+                <h1 className="mt-2 text-sm font-medium text-gray-100 line-clamp-2">{data.productName}</h1>
 
-                <p className='font-semibold'>
+                <p className="font-semibold text-red-500 mt-1">
                     {displayKESCurrency(data.sellingPrice)}
                 </p>
 
-                <div className='flex gap-2 mt-2'>
+                <div className="flex gap-2 mt-3">
                     {/* Edit Button */}
                     <div
-                        className='p-2 bg-green-100 hover:bg-green-600 rounded-full hover:text-white cursor-pointer'
+                        className="p-2 bg-green-700 hover:bg-green-600 rounded-full text-white cursor-pointer shadow-md transition-transform transform hover:scale-105"
                         onClick={() => setEditProduct(true)}
                     >
                         <MdModeEditOutline />
@@ -70,7 +74,7 @@ const AdminProductCard: React.FC<AdminProductCardProps> = ({
 
                     {/* Delete Button */}
                     <div
-                        className='p-2 bg-red-100 hover:bg-red-600 rounded-full hover:text-white cursor-pointer'
+                        className="p-2 bg-red-700 hover:bg-red-600 rounded-full text-white cursor-pointer shadow-md transition-transform transform hover:scale-105"
                         onClick={() => setShowDeleteModal(true)}
                     >
                         <MdDelete />

@@ -20,7 +20,7 @@ interface Product {
   productImage: string[];
   sellingPrice: number;
   price: number;
-  stock: number; // Added stock
+  stock: number;
 }
 
 const VerticalCardProduct = ({ category, heading }: VerticalCardProductProps) => {
@@ -47,30 +47,26 @@ const VerticalCardProduct = ({ category, heading }: VerticalCardProductProps) =>
     fetchData()
   }, [])
 
-  const scrollRight = () => {
-    scrollElement.current && (scrollElement.current.scrollLeft += 300)
-  }
-
-  const scrollLeft = () => {
-    scrollElement.current && (scrollElement.current.scrollLeft -= 300)
-  }
+  const scrollRight = () => scrollElement.current && (scrollElement.current.scrollLeft += 300)
+  const scrollLeft = () => scrollElement.current && (scrollElement.current.scrollLeft -= 300)
 
   return (
-    <div className='container mx-auto px-4 my-6 relative'>
-      <h2 className='text-2xl font-semibold py-4'>{heading}</h2>
+    <div className='bg-gradient-to-b from-black via-gray-900 to-gray-800 py-8 px-4 my-6 rounded-lg shadow-inner'>
+      <h2 className='text-2xl font-bold py-4 text-white'>{heading}</h2>
 
       <div
         className='flex items-center gap-4 md:gap-6 overflow-x-scroll scrollbar-none transition-all'
         ref={scrollElement}
       >
+        {/* Scroll Buttons */}
         <button
-          className='bg-white shadow-md rounded-full p-1 absolute left-0 text-lg hidden md:block'
+          className='bg-gray-800 text-gray-200 shadow-md rounded-full p-2 absolute left-0 text-lg hidden md:block hover:bg-blue-600 hover:text-white transition'
           onClick={scrollLeft}
         >
           <FaAngleLeft />
         </button>
         <button
-          className='bg-white shadow-md rounded-full p-1 absolute right-0 text-lg hidden md:block'
+          className='bg-gray-800 text-gray-200 shadow-md rounded-full p-2 absolute right-0 text-lg hidden md:block hover:bg-blue-600 hover:text-white transition'
           onClick={scrollRight}
         >
           <FaAngleRight />
@@ -79,18 +75,18 @@ const VerticalCardProduct = ({ category, heading }: VerticalCardProductProps) =>
         {loading ? (
           loadingList.map((_, index) => (
             <div
-              className='w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] bg-white rounded-sm shadow'
               key={index}
+              className='w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] bg-white rounded-md shadow'
             >
-              <div className='bg-slate-200 h-48 p-4 flex justify-center items-center animate-pulse'></div>
+              <div className='bg-gray-500 h-48 p-4 flex justify-center items-center animate-pulse rounded-t-md'></div>
               <div className='p-4 grid gap-3'>
-                <div className='h-6 bg-slate-200 rounded-full animate-pulse'></div>
-                <div className='h-4 bg-slate-200 rounded-full animate-pulse'></div>
+                <div className='h-6 bg-gray-500 rounded-full animate-pulse'></div>
+                <div className='h-4 bg-gray-500 rounded-full animate-pulse'></div>
                 <div className='flex gap-3'>
-                  <div className='h-4 w-full bg-slate-200 rounded-full animate-pulse'></div>
-                  <div className='h-4 w-full bg-slate-200 rounded-full animate-pulse'></div>
+                  <div className='h-4 w-full bg-gray-500 rounded-full animate-pulse'></div>
+                  <div className='h-4 w-full bg-gray-500 rounded-full animate-pulse'></div>
                 </div>
-                <div className='h-8 bg-slate-200 rounded-full animate-pulse'></div>
+                <div className='h-8 bg-gray-500 rounded-full animate-pulse'></div>
               </div>
             </div>
           ))
@@ -98,15 +94,15 @@ const VerticalCardProduct = ({ category, heading }: VerticalCardProductProps) =>
           data.map((product) => (
             <div
               key={product.id}
-              className='w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] bg-white rounded-sm shadow'
+              className='w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] bg-white rounded-md shadow hover:shadow-xl hover:border-blue-500 border border-gray-300 transition'
             >
               <Link
                 href={`/product-details?id=${product.id}`}
-                className='bg-slate-200 h-48 p-4 flex justify-center items-center relative'
+                className='bg-gray-50 h-48 p-4 flex justify-center items-center relative rounded-t-md'
               >
                 <img
                   src={product.productImage[0]}
-                  className='object-scale-down h-full hover:scale-110 transition-all mix-blend-multiply'
+                  className='object-scale-down h-full hover:scale-105 transition-transform duration-300'
                   alt={product?.productName}
                 />
                 {product.stock === 0 && (
@@ -119,26 +115,26 @@ const VerticalCardProduct = ({ category, heading }: VerticalCardProductProps) =>
               <div className='p-4 grid gap-3'>
                 <Link
                   href={`/product-details?id=${product.id}`}
-                  className='font-medium text-base md:text-lg text-ellipsis line-clamp-1 text-black hover:underline'
+                  className='font-semibold text-base md:text-lg text-gray-900 line-clamp-1 hover:text-blue-600 transition'
                 >
                   {product?.productName}
                 </Link>
-                <p className='capitalize text-slate-500'>{product?.category}</p>
+                <p className='capitalize text-gray-500 text-sm'>{product?.category}</p>
                 <div className='flex gap-3'>
-                  <p className='text-red-600 font-medium'>
+                  <p className='text-blue-700 font-bold text-base'>
                     {displayKESCurrency(product?.sellingPrice)}
                   </p>
-                  <p className='text-slate-500 line-through'>
+                  <p className='text-gray-400 line-through text-sm'>
                     {displayKESCurrency(product?.price)}
                   </p>
                 </div>
 
                 <div className='flex gap-2'>
                   <button
-                    className={`text-sm px-3 py-0.5 rounded-full ${
+                    className={`text-sm px-3 py-1 rounded-full font-medium shadow ${
                       product.stock === 0
                         ? 'bg-gray-400 text-white cursor-not-allowed'
-                        : 'bg-red-600 hover:bg-red-700 text-white'
+                        : 'bg-blue-700 hover:bg-blue-800 text-white transition'
                     }`}
                     onClick={(e) => product.stock > 0 && handleAddToCart(e, product.id)}
                     disabled={product.stock === 0}
@@ -147,7 +143,7 @@ const VerticalCardProduct = ({ category, heading }: VerticalCardProductProps) =>
                   </button>
                   <Link
                     href={`/product-details?id=${product.id}`}
-                    className='text-sm text-blue-600 hover:underline px-3 py-0.5'
+                    className='text-sm text-blue-700 hover:underline px-3 py-1'
                   >
                     See Details
                   </Link>

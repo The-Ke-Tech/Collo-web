@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import VerticalCard from "@/components/vertical-card";
 
-// Define the expected product shape (adjust as needed based on your DB)
 type Product = {
   id: string;
   productName: string;
@@ -21,7 +20,6 @@ export default function SearchPage() {
   const [results, setResults] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Debounce search: wait 400ms after user stops typing
   useEffect(() => {
     const handler = setTimeout(() => {
       const fetchProducts = async () => {
@@ -46,14 +44,14 @@ export default function SearchPage() {
   }, [query, router]);
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-4">
-      <h1 className="text-2xl font-semibold mb-4">
+    <div className="max-w-5xl mx-auto py-10 px-6 bg-gradient-to-b from-black via-gray-900 to-gray-800 rounded-lg shadow-lg text-gray-200">
+      <h1 className="text-2xl font-semibold mb-4 text-white">
         {query
           ? `Found ${results.length} result${results.length !== 1 ? "s" : ""} for "${query}"`
           : "Search Products"}
       </h1>
 
-      {loading && <p className="text-gray-500 mb-4">Searching...</p>}
+      {loading && <p className="text-gray-400 mb-4">Searching...</p>}
       {!loading && results.length === 0 && query && (
         <p className="text-gray-500">No results found for "{query}".</p>
       )}

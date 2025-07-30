@@ -1,13 +1,97 @@
-import React from 'react'
+import React from 'react';
+import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube, FaLinkedinIn } from 'react-icons/fa';
+import Link from 'next/link';
+import Image from 'next/image';
 
 const Footer = () => {
   return (
-    <footer className='bg-slate-200'>
-      <div className='container mx-auto p-4'>
-       <p className='text-center font-bold' title="Youtube Channel">COLLTECH</p>
+    <footer className="bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-300">
+      <div className="container mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+        
+        {/* Brand Section */}
+        <div>
+          <h2 className="text-3xl font-extrabold text-white mb-4">COLTECH</h2>
+          <p className="text-sm leading-relaxed text-gray-400">
+            Your trusted store for <span className="text-white font-medium">quality tech & office essentials</span> — 
+            from earphones & routers to paper reams & Bluetooth speakers. 
+            Shop smart, shop COLLTECH.
+          </p>
+          <div className="flex items-center space-x-3 mt-6">
+            {[FaFacebookF, FaTwitter, FaInstagram, FaYoutube, FaLinkedinIn].map((Icon, i) => (
+              <a 
+                key={i} 
+                href="#" 
+                className="p-2 rounded-full bg-gray-800 text-gray-300 hover:text-white hover:bg-blue-600 transition"
+              >
+                <Icon />
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Shop Links */}
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Shop</h3>
+          <ul className="space-y-2 text-sm">
+            <li><Link href="/products/earphones" className="hover:text-blue-500 transition">Earphones & AirPods</Link></li>
+            <li><Link href="/products/bluetooth-speakers" className="hover:text-blue-500 transition">Bluetooth Speakers</Link></li>
+            <li><Link href="/products/routers" className="hover:text-blue-500 transition">Routers & Modems</Link></li>
+            <li><Link href="/products/office-supplies" className="hover:text-blue-500 transition">Office Supplies</Link></li>
+          </ul>
+        </div>
+
+        {/* Customer Care */}
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Customer Care</h3>
+          <ul className="space-y-2 text-sm">
+            <li><Link href="/faq" className="hover:text-blue-500 transition">FAQs</Link></li>
+            <li><Link href="/support" className="hover:text-blue-500 transition">Help & Support</Link></li>
+            <li><Link href="/returns" className="hover:text-blue-500 transition">Returns & Refunds</Link></li>
+            <li><Link href="/contact" className="hover:text-blue-500 transition">Contact Us</Link></li>
+          </ul>
+        </div>
+
+        {/* Newsletter + Payments */}
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Stay Updated</h3>
+          <p className="text-sm text-gray-400 mb-3">
+            Get exclusive deals, new arrivals & tech tips directly in your inbox.
+          </p>
+          <form className="flex">
+            <input 
+              type="email" 
+              placeholder="Enter your email" 
+              className="w-full px-3 py-2 rounded-l-md bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button 
+              type="submit" 
+              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r-md text-white font-medium transition">
+              Subscribe
+            </button>
+          </form>
+
+          <div className="mt-6">
+            <p className="text-sm font-medium text-gray-300 mb-2">We Accept:</p>
+            <div className="flex items-center gap-3">
+              <Image
+                src="/mpesa.png" // Replace with your actual path
+                alt="M-Pesa"
+                width={70}
+                height={35}
+                className="object-contain bg-white p-1 rounded"
+              />
+              {/* Add more logos like Visa, PayPal if needed */}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Bar */}
+      <div className="border-t border-gray-700 py-4 text-center text-gray-400 text-sm">
+        © {new Date().getFullYear()} <span className="text-blue-500 font-medium">COLLTECH</span>. Your Tech & Office Partner. All Rights Reserved.
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

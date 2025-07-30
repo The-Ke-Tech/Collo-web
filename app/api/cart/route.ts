@@ -1,3 +1,4 @@
+// /api/cart/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/common/lib/db';
 import { jwtVerify } from 'jose';
@@ -22,17 +23,17 @@ export async function GET(req: NextRequest) {
             productName: true,
             category: true,
             sellingPrice: true,
+            stock: true, // <-- Include stock here
           },
         },
       },
       orderBy: { createdAt: 'asc' },
     });
 
-    // Reshape for frontend
     const formatted = cart.map(item => ({
       _id: item.id,
       quantity: item.quantity,
-      productId: item.product, 
+      productId: item.product,
     }));
 
     return NextResponse.json({ success: true, data: formatted });

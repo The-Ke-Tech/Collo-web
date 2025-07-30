@@ -86,12 +86,12 @@ const AllUsers = () => {
   };
 
   return (
-    <div className="bg-white rounded-md shadow-md p-4 overflow-x-auto">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">👥 All Users</h2>
+    <div className="bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-300 rounded-md shadow-md p-4 overflow-x-auto min-h-screen">
+      <h2 className="text-xl font-semibold mb-4 text-white">👥 All Users</h2>
 
       <table className="w-full min-w-[700px] text-sm text-left border-collapse">
         <thead>
-          <tr className="bg-gray-900 text-white text-sm">
+          <tr className="bg-gray-800 text-gray-200 text-sm">
             <th className="py-2 px-3">#</th>
             <th className="py-2 px-3">Name</th>
             <th className="py-2 px-3">Email</th>
@@ -107,15 +107,15 @@ const AllUsers = () => {
             </tr>
           ) : (
             paginatedUsers.map((el, index) => (
-              <tr key={el.id} className="hover:bg-gray-100 transition duration-150">
+              <tr key={el.id} className="hover:bg-gray-700 transition duration-150">
                 <td className="py-2 px-3">{(currentPage - 1) * USERS_PER_PAGE + index + 1}</td>
                 <td className="py-2 px-3 capitalize">{el?.name}</td>
                 <td className="py-2 px-3 break-words">{el?.email}</td>
-                <td className="py-2 px-3 uppercase font-semibold">{el?.role}</td>
+                <td className="py-2 px-3 uppercase font-semibold text-blue-400">{el?.role}</td>
                 <td className="py-2 px-3">{moment(el?.createdAt).format('LL')}</td>
                 <td className="py-2 px-3">
                   <button
-                    className="p-2 rounded-full text-green-600 hover:bg-green-500 hover:text-white transition"
+                    className="p-2 rounded-full text-green-400 hover:bg-green-600 hover:text-white transition"
                     onClick={() => {
                       setUpdateUserDetails(el);
                       setNewRole(el.role);
@@ -137,7 +137,7 @@ const AllUsers = () => {
           <button
             onClick={() => changePage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50"
+            className="px-3 py-1 border border-gray-600 rounded hover:bg-gray-700 disabled:opacity-50 text-gray-300"
           >
             Prev
           </button>
@@ -145,8 +145,8 @@ const AllUsers = () => {
             <button
               key={idx}
               onClick={() => changePage(idx + 1)}
-              className={`px-3 py-1 border rounded hover:bg-gray-200 ${
-                currentPage === idx + 1 ? 'bg-black text-white' : ''
+              className={`px-3 py-1 border border-gray-600 rounded hover:bg-gray-700 ${
+                currentPage === idx + 1 ? 'bg-blue-600 text-white' : 'text-gray-300'
               }`}
             >
               {idx + 1}
@@ -155,7 +155,7 @@ const AllUsers = () => {
           <button
             onClick={() => changePage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50"
+            className="px-3 py-1 border border-gray-600 rounded hover:bg-gray-700 disabled:opacity-50 text-gray-300"
           >
             Next
           </button>
@@ -164,16 +164,16 @@ const AllUsers = () => {
 
       {/* Inline Modal for Role Change */}
       {openUpdateRole && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-            <h2 className="text-lg font-semibold mb-4">Change Role</h2>
-            <p className="mb-2 text-sm text-gray-600">
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div className="bg-gradient-to-b from-gray-900 via-gray-800 to-gray-700 rounded-lg shadow-lg w-full max-w-md p-6 text-gray-300">
+            <h2 className="text-lg font-semibold mb-4 text-white">Change Role</h2>
+            <p className="mb-2 text-sm text-gray-400">
               <strong>{updateUserDetails.name}</strong> <br /> <span>{updateUserDetails.email}</span>
             </p>
 
-            <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Role</label>
             <select
-              className="w-full border rounded p-2 mb-4"
+              className="w-full border border-gray-600 rounded p-2 mb-4 bg-gray-800 text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               value={newRole}
               onChange={(e) => setNewRole(e.target.value)}
             >
@@ -183,7 +183,7 @@ const AllUsers = () => {
             </select>
 
             <div className="flex justify-end gap-3">
-              <button onClick={() => setOpenUpdateRole(false)} className="px-4 py-2 rounded border hover:bg-gray-100">
+              <button onClick={() => setOpenUpdateRole(false)} className="px-4 py-2 rounded border border-gray-600 hover:bg-gray-700">
                 Cancel
               </button>
               <button

@@ -1,4 +1,4 @@
-// components/ConfirmModal.tsx
+'use client';
 import React from "react";
 
 interface ConfirmModalProps {
@@ -8,25 +8,39 @@ interface ConfirmModalProps {
   onCancel: () => void;
 }
 
-const ConfirmModal: React.FC<ConfirmModalProps> = ({ title = "Confirm Action", message, onConfirm, onCancel }) => {
+const ConfirmModal: React.FC<ConfirmModalProps> = ({
+  title = "Confirm Action",
+  message,
+  onConfirm,
+  onCancel,
+}) => {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-sm p-6">
-        <h2 className="text-lg font-semibold mb-4">{title}</h2>
-        <p className="text-gray-600 mb-6">{message}</p>
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-          >
-            Confirm
-          </button>
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50 animate-fadeIn">
+      <div className="rounded-xl shadow-2xl w-full max-w-sm transform transition-all scale-95 hover:scale-100 
+        bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-300">
+        
+        {/* Header */}
+        <div className="border-b border-gray-700 px-6 py-4">
+          <h2 className="text-lg font-semibold text-white">{title}</h2>
+        </div>
+
+        {/* Body */}
+        <div className="p-6">
+          <p className="text-gray-300 mb-6">{message}</p>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={onCancel}
+              className="px-4 py-2 rounded-lg bg-gray-700 text-gray-300 font-medium hover:bg-gray-600 transition"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md transition"
+            >
+              Confirm
+            </button>
+          </div>
         </div>
       </div>
     </div>

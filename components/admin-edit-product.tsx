@@ -102,12 +102,12 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
   };
 
   return (
-    <div className="fixed w-full h-full bg-slate-200 bg-opacity-35 top-0 left-0 right-0 bottom-0 flex justify-center items-center">
-      <div className="bg-white p-4 rounded w-full max-w-2xl h-full max-h-[80%] overflow-hidden">
-        <div className="flex justify-between items-center pb-3">
-          <h2 className="font-bold text-lg">Edit Product</h2>
+    <div className="fixed w-full h-full bg-black bg-opacity-50 top-0 left-0 right-0 bottom-0 flex justify-center items-center">
+      <div className="bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-200 p-4 rounded-lg w-full max-w-2xl h-full max-h-[80%] overflow-hidden shadow-lg">
+        <div className="flex justify-between items-center pb-3 border-b border-gray-700">
+          <h2 className="font-bold text-xl text-white">Edit Product</h2>
           <div
-            className="w-fit ml-auto text-2xl hover:text-red-600 cursor-pointer"
+            className="w-fit ml-auto text-2xl hover:text-red-500 cursor-pointer"
             onClick={onClose}
           >
             <CgClose />
@@ -115,7 +115,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
         </div>
 
         <form
-          className="grid p-4 gap-2 overflow-y-scroll h-full pb-5"
+          className="grid p-4 gap-3 overflow-y-scroll h-full pb-5"
           onSubmit={handleSubmit}
         >
           <label htmlFor="productName">Product Name :</label>
@@ -125,7 +125,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             name="productName"
             value={data.productName}
             onChange={handleOnChange}
-            className="p-2 bg-slate-100 border rounded"
+            className="p-2 bg-gray-800 border border-gray-700 rounded text-white"
             required
           />
 
@@ -138,7 +138,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             value={data.brandName}
             name="brandName"
             onChange={handleOnChange}
-            className="p-2 bg-slate-100 border rounded"
+            className="p-2 bg-gray-800 border border-gray-700 rounded text-white"
             required
           />
 
@@ -150,7 +150,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             value={data.category}
             name="category"
             onChange={handleOnChange}
-            className="p-2 bg-slate-100 border rounded"
+            className="p-2 bg-gray-800 border border-gray-700 rounded text-white"
           >
             <option value={""}>Select Category</option>
             {productCategory.map((el, index) => (
@@ -169,7 +169,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             value={data.stock}
             name="stock"
             onChange={handleOnChange}
-            className="p-2 bg-slate-100 border rounded"
+            className="p-2 bg-gray-800 border border-gray-700 rounded text-white"
             required
             min={0}
           />
@@ -178,8 +178,8 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             Product Image :
           </label>
           <label htmlFor="uploadImageInput">
-            <div className="p-2 bg-slate-100 border rounded h-32 w-full flex justify-center items-center cursor-pointer">
-              <div className="text-slate-500 flex justify-center items-center flex-col gap-2">
+            <div className="p-2 bg-gray-800 border border-gray-700 rounded h-32 w-full flex justify-center items-center cursor-pointer">
+              <div className="text-gray-400 flex justify-center items-center flex-col gap-2">
                 <span className="text-4xl">
                   <FaCloudUploadAlt />
                 </span>
@@ -204,7 +204,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
                       alt={el}
                       width={80}
                       height={80}
-                      className="bg-slate-100 border cursor-pointer"
+                      className="bg-gray-800 border border-gray-700 cursor-pointer rounded"
                       onClick={() => {
                         setOpenFullScreenImage(true);
                         setFullScreenImage(el);
@@ -220,7 +220,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
                 ))}
               </div>
             ) : (
-              <p className="text-red-600 text-xs">
+              <p className="text-red-500 text-xs">
                 *Please upload product image
               </p>
             )}
@@ -235,7 +235,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             value={data.price}
             name="price"
             onChange={handleOnChange}
-            className="p-2 bg-slate-100 border rounded"
+            className="p-2 bg-gray-800 border border-gray-700 rounded text-white"
             required
           />
 
@@ -248,7 +248,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             value={data.sellingPrice}
             name="sellingPrice"
             onChange={handleOnChange}
-            className="p-2 bg-slate-100 border rounded"
+            className="p-2 bg-gray-800 border border-gray-700 rounded text-white"
             required
           />
 
@@ -256,7 +256,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             Description :
           </label>
           <textarea
-            className="h-28 bg-slate-100 border resize-none p-1"
+            className="h-28 bg-gray-800 border border-gray-700 resize-none p-2 text-white rounded"
             placeholder="Enter product description"
             rows={3}
             onChange={handleOnChange}
@@ -264,7 +264,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             value={data.description}
           ></textarea>
 
-          <button className="px-3 py-2 bg-red-600 text-white mb-10 hover:bg-red-700">
+          <button className="px-3 py-2 bg-red-600 text-white mb-10 hover:bg-red-700 rounded">
             Update Product
           </button>
         </form>

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from 'react';
 import Image from 'next/image';
@@ -40,71 +40,36 @@ const SignUp = () => {
     }))
   }
 
-  const isValidEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
+  const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const { name, email, password, confirmPassword } = data
 
-    if (!name || !email || !password || !confirmPassword) {
-      toast.error("All fields are required")
-      return
-    }
-
-    if (!isValidEmail(email)) {
-      toast.error("Invalid email format")
-      return
-    }
-
-    if (password.length < 8) {
-      toast.error("Password must be at least 8 characters long")
-      return
-    }
-
-    if (!/[A-Z]/.test(password)) {
-      toast.error("Password must include at least one uppercase letter")
-      return
-    }
-
-    if (!/[a-z]/.test(password)) {
-      toast.error("Password must include at least one lowercase letter")
-      return
-    }
-
-    if (!/[0-9]/.test(password)) {
-      toast.error("Password must include at least one number")
-      return
-    }
-
-    if (!/[\W_]/.test(password)) {
-      toast.error("Password must include at least one special character (e.g. @, #, $, !)")
-      return
-    }
-
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match")
-      return
-    }
+    if (!name || !email || !password || !confirmPassword) return toast.error("All fields are required");
+    if (!isValidEmail(email)) return toast.error("Invalid email format");
+    if (password.length < 8) return toast.error("Password must be at least 8 characters long");
+    if (!/[A-Z]/.test(password)) return toast.error("Password must include at least one uppercase letter");
+    if (!/[a-z]/.test(password)) return toast.error("Password must include at least one lowercase letter");
+    if (!/[0-9]/.test(password)) return toast.error("Password must include at least one number");
+    if (!/[\W_]/.test(password)) return toast.error("Password must include at least one special character (e.g. @, #, $, !)");
+    if (password !== confirmPassword) return toast.error("Passwords do not match");
 
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
-      })
+      });
 
-      const resData = await response.json()
+      const resData = await response.json();
 
       if (resData.success) {
-        toast.success(resData.message)
-        router.push("/login")
+        toast.success(resData.message);
+        router.push("/login");
       } else {
-        toast.error(resData.message || "Signup failed")
+        toast.error(resData.message || "Signup failed");
       }
     } catch (error: unknown) {
       const err = error as { message?: string };
@@ -113,22 +78,18 @@ const SignUp = () => {
   }
 
   return (
-    <section id='signup'>
+    <section id='signup' className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-200">
       <div className='mx-auto container p-4'>
-        <div className='bg-white p-5 w-full max-w-sm mx-auto'>
-
-          <div className='w-20 h-20 mx-auto relative overflow-hidden rounded-full'>
-            {
-              data.profilePic ? (
-                <img src={data.profilePic} alt="Uploaded profile" className='w-full h-full object-cover' />
-              ) : (
-                <Image src={loginIcons} alt='login icon' className='w-full h-full object-cover' />
-              )
-            }
-
+        <div className='bg-gray-900 p-6 rounded-2xl w-full max-w-sm mx-auto shadow-lg'>
+          <div className='w-20 h-20 mx-auto relative overflow-hidden rounded-full border-4 border-gray-700'>
+            {data.profilePic ? (
+              <img src={data.profilePic} alt="Uploaded profile" className='w-full h-full object-cover' />
+            ) : (
+              <Image src={loginIcons} alt='login icon' className='w-full h-full object-cover' />
+            )}
             <form>
               <label>
-                <div className='text-xs bg-opacity-80 bg-slate-200 pb-4 pt-2 cursor-pointer text-center absolute bottom-0 w-full'>
+                <div className='text-xs bg-gray-800 text-gray-300 pb-4 pt-2 cursor-pointer text-center absolute bottom-0 w-full'>
                   Upload Photo
                 </div>
                 <input type='file' className='hidden' onChange={handleUploadPic} />
@@ -136,81 +97,81 @@ const SignUp = () => {
             </form>
           </div>
 
-          <form className='pt-6 flex flex-col gap-2' onSubmit={handleSubmit}>
+          <form className='pt-6 flex flex-col gap-3' onSubmit={handleSubmit}>
             <div className='grid'>
-              <label>Name :</label>
-              <div className='bg-slate-100 p-2'>
+              <label className="mb-1 text-gray-300">Name :</label>
+              <div className='bg-gray-800 p-2 rounded'>
                 <input
                   type='text'
-                  placeholder='enter your name'
+                  placeholder='Enter your name'
                   name='name'
                   value={data.name}
                   onChange={handleOnChange}
                   required
-                  className='w-full h-full outline-none bg-transparent'
+                  className='w-full h-full outline-none bg-transparent text-gray-100'
                 />
               </div>
             </div>
 
             <div className='grid'>
-              <label>Email :</label>
-              <div className='bg-slate-100 p-2'>
+              <label className="mb-1 text-gray-300">Email :</label>
+              <div className='bg-gray-800 p-2 rounded'>
                 <input
                   type='email'
-                  placeholder='enter email'
+                  placeholder='Enter email'
                   name='email'
                   value={data.email}
                   onChange={handleOnChange}
                   required
-                  className='w-full h-full outline-none bg-transparent'
+                  className='w-full h-full outline-none bg-transparent text-gray-100'
                 />
               </div>
             </div>
 
             <div>
-              <label>Password :</label>
-              <div className='bg-slate-100 p-2 flex'>
+              <label className="mb-1 text-gray-300">Password :</label>
+              <div className='bg-gray-800 p-2 flex rounded'>
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder='enter password'
+                  placeholder='Enter password'
                   name='password'
                   value={data.password}
                   onChange={handleOnChange}
                   required
-                  className='w-full h-full outline-none bg-transparent'
+                  className='w-full h-full outline-none bg-transparent text-gray-100'
                 />
-                <div className='cursor-pointer text-xl' onClick={() => setShowPassword(!showPassword)}>
+                <div className='cursor-pointer text-xl text-gray-400 hover:text-gray-200' onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </div>
               </div>
             </div>
 
             <div>
-              <label>Confirm Password :</label>
-              <div className='bg-slate-100 p-2 flex'>
+              <label className="mb-1 text-gray-300">Confirm Password :</label>
+              <div className='bg-gray-800 p-2 flex rounded'>
                 <input
                   type={showConfirmPassword ? "text" : "password"}
-                  placeholder='enter confirm password'
+                  placeholder='Confirm password'
                   name='confirmPassword'
                   value={data.confirmPassword}
                   onChange={handleOnChange}
                   required
-                  className='w-full h-full outline-none bg-transparent'
+                  className='w-full h-full outline-none bg-transparent text-gray-100'
                 />
-                <div className='cursor-pointer text-xl' onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                <div className='cursor-pointer text-xl text-gray-400 hover:text-gray-200' onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                 </div>
               </div>
             </div>
 
-            <button className='bg-red-600 hover:bg-red-700 text-white px-6 py-2 w-full max-w-[150px] rounded-full hover:scale-110 transition-all mx-auto block mt-6'>
+            <button className='bg-red-600 hover:bg-red-700 text-white px-6 py-2 w-full max-w-[150px] rounded-full hover:scale-105 transition-all mx-auto block mt-6'>
               Sign Up
             </button>
           </form>
 
-          <p className='my-5 text-center'>
+          <p className='my-5 text-center text-gray-400'>
             Already have an account?
-            <Link href="/login" className='text-red-600 hover:text-red-700 hover:underline ml-1'>
+            <Link href="/login" className='text-red-500 hover:text-red-400 hover:underline ml-1'>
               Login
             </Link>
           </p>

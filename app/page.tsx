@@ -7,19 +7,15 @@ import React from 'react'
 export default function page() {
   return (
     <div>
-      <CategoryList/>
-      <BannerProduct/>
-      <HorizontalCardProduct category={"airpodes"} heading={"Top's Airpodes"}/>
-      <HorizontalCardProduct category={"watches"} heading={"Popular's Watches"}/>
+      <CategoryList />
+      <BannerProduct />
 
-      <VerticalCardProduct category={"mobiles"} heading={"Mobiles"}/>
-      <VerticalCardProduct category={"Mouse"} heading={"Mouse"}/>
-      <VerticalCardProduct category={"televisions"} heading={"Televisions"}/>
-      <VerticalCardProduct category={"camera"} heading={"Camera & Photography"}/>
-      <VerticalCardProduct category={"earphones"} heading={"Wired Earphones"}/>
-      <VerticalCardProduct category={"speakers"} heading={"Bluetooth Speakers"}/>
-      <VerticalCardProduct category={"refrigerator"} heading={"Refrigerator"}/>
-      <VerticalCardProduct category={"trimmers"} heading={"Trimmers"}/>
+      <HorizontalCardProduct category="phone-accessories" heading="Top Phone Accessories" />
+      <HorizontalCardProduct category="computer-accessories" heading="Best Computer Accessories" />
+
+      <VerticalCardProduct category="stationery" heading="Stationery" />
+      <VerticalCardProduct category="electronics" heading="Electronics & Gadgets" />
+      <VerticalCardProduct category="internet-accessories" heading="Internet Accessories" />
     </div>
   )
 }

@@ -64,24 +64,24 @@ const Header = () => {
   };
 
   return (
-    <header className='shadow-md bg-white fixed w-full z-40'>
+    <header className='shadow-md bg-gradient-to-r from-black via-gray-900 to-gray-800 text-gray-300 fixed w-full z-40 border-b border-gray-700'>
       {/* Top Row: Logo + Search (desktop) + Actions */}
       <div className='container mx-auto flex items-center justify-between px-4 h-16'>
         {/* Logo */}
         <Link href="/">
-          <Logo width={50} height={50} />
+          <Logo width={55} height={55} />
         </Link>
 
-        {/* Search Bar (visible only on lg and up) */}
-        <div className='hidden lg:flex items-center w-full max-w-sm border rounded-full focus-within:shadow pl-2'>
+        {/* Search Bar (desktop only) */}
+        <div className='hidden lg:flex items-center w-full max-w-md border border-gray-700 rounded-full focus-within:shadow-lg bg-gray-100 pl-3'>
           <input
             type='text'
-            placeholder='search product here...'
-            className='w-full outline-none'
+            placeholder='Search for products...'
+            className='w-full outline-none text-gray-700 placeholder-gray-500'
             onChange={handleSearch}
             value={search}
           />
-          <div className='text-lg min-w-[50px] h-8 bg-red-600 flex items-center justify-center rounded-r-full text-white'>
+          <div className='text-lg min-w-[50px] h-9 bg-blue-600 flex items-center justify-center rounded-r-full text-white hover:bg-blue-700 transition'>
             <GrSearch />
           </div>
         </div>
@@ -89,9 +89,9 @@ const Header = () => {
         {/* Right Section: Dashboard + Cart + User + Auth */}
         <div className='flex items-center gap-5'>
           {user?.id && (
-            <Link 
-              href="/customer-dashboard" 
-              className="text-sm font-medium text-blue-600 hover:underline"
+            <Link
+              href="/customer-dashboard"
+              className="text-sm font-medium text-blue-400 hover:text-blue-500 transition"
             >
               Dashboard
             </Link>
@@ -99,9 +99,9 @@ const Header = () => {
 
           {user?.id && (
             <Link href="/cart" className='text-2xl relative'>
-              <span><FaShoppingCart /></span>
-              <div className='bg-red-600 text-white w-5 h-5 rounded-full p-1 flex items-center justify-center absolute -top-2 -right-3'>
-                <p className='text-sm'>{context?.cartProductCount}</p>
+              <span><FaShoppingCart className="text-gray-300 hover:text-blue-500 transition" /></span>
+              <div className='bg-red-600 text-white w-5 h-5 rounded-full p-1 flex items-center justify-center absolute -top-2 -right-3 text-xs'>
+                {context?.cartProductCount}
               </div>
             </Link>
           )}
@@ -110,17 +110,21 @@ const Header = () => {
             {user?.id && (
               <div className='text-3xl cursor-pointer relative flex justify-center' onClick={() => setMenuDisplay(prev => !prev)}>
                 {user?.profilePic ? (
-                  <img src={user?.profilePic} className='w-10 h-10 rounded-full' alt={user?.name} />
+                  <img src={user?.profilePic} className='w-10 h-10 rounded-full border-2 border-gray-700' alt={user?.name} />
                 ) : (
-                  <FaRegCircleUser />
+                  <FaRegCircleUser className="text-gray-300 hover:text-blue-500 transition" />
                 )}
               </div>
             )}
             {menuDisplay && (
-              <div className='absolute bg-white bottom-0 top-11 h-fit p-2 shadow-lg rounded'>
-                <nav>
+              <div className="absolute bg-gray-900 top-11 right-0 h-fit p-2 shadow-lg rounded-md w-40 border border-gray-700">
+                <nav className="flex flex-col space-y-2">
                   {user?.role === ROLE.ADMIN && (
-                    <Link href="/admin-panel" className='whitespace-nowrap hidden md:block hover:bg-slate-100 p-2' onClick={() => setMenuDisplay(prev => !prev)}>
+                    <Link
+                      href="/admin-panel"
+                      className="block px-4 py-2 rounded text-gray-300 hover:bg-blue-600 hover:text-white"
+                      onClick={() => setMenuDisplay(prev => !prev)}
+                    >
                       Admin Panel
                     </Link>
                   )}
@@ -131,9 +135,13 @@ const Header = () => {
 
           <div>
             {user?.id ? (
-              <button onClick={handleLogout} className='px-3 py-1 rounded-full text-white bg-red-600 hover:bg-red-700'>Logout</button>
+              <button onClick={handleLogout} className='px-4 py-1.5 rounded-full text-white bg-blue-600 hover:bg-blue-700 transition shadow'>
+                Logout
+              </button>
             ) : (
-              <Link href="/login" className='px-3 py-1 rounded-full text-white bg-red-600 hover:bg-red-700'>Login</Link>
+              <Link href="/login" className='px-4 py-1.5 rounded-full text-white bg-blue-600 hover:bg-blue-700 transition shadow'>
+                Login
+              </Link>
             )}
           </div>
         </div>
@@ -141,15 +149,15 @@ const Header = () => {
 
       {/* Search Bar (Mobile only) */}
       <div className='px-4 pb-3 lg:hidden'>
-        <div className='flex items-center w-full border rounded-full focus-within:shadow pl-2'>
+        <div className='flex items-center w-full border border-gray-700 rounded-full focus-within:shadow-lg bg-gray-100 pl-3'>
           <input
             type='text'
-            placeholder='search product here...'
-            className='w-full outline-none p-2'
+            placeholder='Search for products...'
+            className='w-full outline-none p-2 text-gray-700 placeholder-gray-500'
             onChange={handleSearch}
             value={search}
           />
-          <div className='text-lg min-w-[50px] h-10 bg-red-600 flex items-center justify-center rounded-r-full text-white'>
+          <div className='text-lg min-w-[50px] h-10 bg-blue-600 flex items-center justify-center rounded-r-full text-white hover:bg-blue-700 transition'>
             <GrSearch />
           </div>
         </div>
