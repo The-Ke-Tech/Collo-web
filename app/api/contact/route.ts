@@ -53,8 +53,8 @@ export async function POST(req: Request) {
     // Auto-reply to customer
     const autoReplyBody = `
       <p>Hi ${name},</p>
-      <p>Thanks for contacting us! We&apos;ve received your message and our support team will get back to you shortly.</p>
-      <p>Here&apos;s a copy of your message:</p>
+      <p>Thanks for contacting us! We have received your message and our support team will get back to you shortly.</p>
+      <p>Here is a copy of your message:</p>
       <blockquote style="border-left: 4px solid #0d6efd; padding-left: 10px; color: #555; margin: 10px 0;">
         ${message}
       </blockquote>
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
     await transporter.sendMail({
       from: `"COLTECH" <${process.env.SMTP_USER}>`,
       to: email,
-      subject: "We&apos;ve received your message",
+      subject: "We have received your message",
       html: generateEmailTemplate({ title: "Thanks for contacting us!", body: autoReplyBody }),
     });
 
