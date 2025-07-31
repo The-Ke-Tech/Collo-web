@@ -142,7 +142,7 @@ const CategoryProduct = () => {
   );
 
   return (
-    <div className="container mx-auto p-4 bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-200 min-h-screen">
+    <div className="container mx-auto pt-4 px-1 bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-200 min-h-screen">
       {/* Mobile filter button */}
       <div className="lg:hidden flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Filters</h2>
@@ -164,7 +164,7 @@ const CategoryProduct = () => {
           <p className="font-medium text-gray-100 text-lg my-2">
             Search Results: {data.length}
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="">
             {loading ? (
               <p className="col-span-full text-center text-gray-400 py-10">
                 Loading products...

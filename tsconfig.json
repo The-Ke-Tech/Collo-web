@@ -22,6 +22,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/(routes)/login", "app/(routes)/Cancel"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/(routes)/login", "app/(routes)/Cancel", "test-db.cjs"],
   "exclude": ["node_modules"]
 }

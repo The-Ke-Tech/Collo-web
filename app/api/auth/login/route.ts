@@ -1,3 +1,4 @@
+// /app/api/auth/login/route.ts
 import { db } from "@/common/lib/db";
 import { compare } from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
@@ -16,23 +17,16 @@ async function generateToken(userId: string, role: string) {
 export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json();
-
     if (!email || !password) {
-      return NextResponse.json(
-        { success: false, message: "Email and password required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, message: "Email and password required" }, { status: 400 });
     }
 
     const user = await db.user.findUnique({ where: { email } });
     if (!user || !user.password || !(await compare(password, user.password))) {
-      return NextResponse.json(
-        { success: false, message: "Invalid credentials" },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, message: "Invalid credentials" }, { status: 401 });
     }
 
-    const token = await generateToken(user.id, user.role ?? "default-role");
+    const token = await generateToken(user.id, user.role ? user.role.toLowerCase() : "general");
 
     const res = NextResponse.json({
       success: true,
@@ -50,10 +44,7 @@ export async function POST(req: NextRequest) {
 
     return res;
   } catch (error: any) {
-    console.error("Login API Error:", error); // logs visible in Vercel
-    return NextResponse.json(
-      { success: false, message: "Internal server error", error: error.message },
-      { status: 500 }
-    );
+    console.error("Login API Error:", error);
+    return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 });
   }
 }

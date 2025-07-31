@@ -6,7 +6,7 @@ import Image from 'next/image';
 const Footer = () => {
   return (
     <footer className="bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-300">
-      <div className="container mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+      <div className="container mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
         
         {/* Brand Section */}
         <div>
@@ -33,10 +33,10 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Shop</h3>
           <ul className="space-y-2 text-sm">
-            <li><Link href="/products/earphones" className="hover:text-blue-500 transition">Earphones & AirPods</Link></li>
-            <li><Link href="/products/bluetooth-speakers" className="hover:text-blue-500 transition">Bluetooth Speakers</Link></li>
-            <li><Link href="/products/routers" className="hover:text-blue-500 transition">Routers & Modems</Link></li>
-            <li><Link href="/products/office-supplies" className="hover:text-blue-500 transition">Office Supplies</Link></li>
+            <li><Link href="/category-product" className="hover:text-blue-500 transition">Earphones & AirPods</Link></li>
+            <li><Link href="/category-product" className="hover:text-blue-500 transition">Bluetooth Speakers</Link></li>
+            <li><Link href="/category-product" className="hover:text-blue-500 transition">Routers & Modems</Link></li>
+            <li><Link href="/category-product" className="hover:text-blue-500 transition">Office Supplies</Link></li>
           </ul>
         </div>
 
@@ -49,40 +49,6 @@ const Footer = () => {
             <li><Link href="/returns" className="hover:text-blue-500 transition">Returns & Refunds</Link></li>
             <li><Link href="/contact" className="hover:text-blue-500 transition">Contact Us</Link></li>
           </ul>
-        </div>
-
-        {/* Newsletter + Payments */}
-        <div>
-          <h3 className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Stay Updated</h3>
-          <p className="text-sm text-gray-400 mb-3">
-            Get exclusive deals, new arrivals & tech tips directly in your inbox.
-          </p>
-          <form className="flex">
-            <input 
-              type="email" 
-              placeholder="Enter your email" 
-              className="w-full px-3 py-2 rounded-l-md bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button 
-              type="submit" 
-              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r-md text-white font-medium transition">
-              Subscribe
-            </button>
-          </form>
-
-          <div className="mt-6">
-            <p className="text-sm font-medium text-gray-300 mb-2">We Accept:</p>
-            <div className="flex items-center gap-3">
-              <Image
-                src="/mpesa.png" // Replace with your actual path
-                alt="M-Pesa"
-                width={70}
-                height={35}
-                className="object-contain bg-white p-1 rounded"
-              />
-              {/* Add more logos like Visa, PayPal if needed */}
-            </div>
-          </div>
         </div>
       </div>
 
