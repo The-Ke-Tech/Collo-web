@@ -18,7 +18,7 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get('token')?.value;
   const { pathname } = req.nextUrl;
 
-  const PUBLIC_ROUTES = ['/', '/login', '/register', '/search-product', '/product-details', '/api/public'];
+  const PUBLIC_ROUTES = ['/', '/login', '/register', '/search-product', '/product-details', '/api/public', '/api/webhook', '/api/search-product', '/api/product-details', ];
   const ADMIN_ROUTES = ['/admin-panel', '/admin', '/api/admin'];
   const GENERAL_ROUTES = ['/account', '/cart', '/orders', '/customer-dashboard', '/api/dashboard/customer'];
 
