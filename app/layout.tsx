@@ -108,7 +108,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 "name": "COLLTECH",
                 "potentialAction": {
                   "@type": "SearchAction",
-                  "target": `${baseUrl}/search?query={search_term_string}`,
+                  "target": "https://www.colltechhub.com/search-product?q={search_term_string}",
                   "query-input": "required name=search_term_string"
                 }
               },
