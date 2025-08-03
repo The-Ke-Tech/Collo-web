@@ -15,6 +15,7 @@ interface VerticalCardProductProps {
 
 interface Product {
   id: string;
+  slug: string;
   productName: string;
   category: string;
   productImage: string[];
@@ -51,7 +52,7 @@ const VerticalCardProduct = ({ category, heading }: VerticalCardProductProps) =>
   const scrollLeft = () => scrollElement.current && (scrollElement.current.scrollLeft -= 300)
 
   return (
-    <div className='bg-gradient-to-b from-black via-gray-900 to-gray-800 py-8 px-4 my-6 rounded-lg shadow-inner'>
+    <div className='bg-gradient-to-b from-[#00C2D1] via-[#4B3F72] to-[#7B2CBF] py-8 px-4 my-6 rounded-lg shadow-inner'>
       <h2 className='text-2xl font-bold py-4 text-white'>{heading}</h2>
 
       <div
@@ -60,13 +61,13 @@ const VerticalCardProduct = ({ category, heading }: VerticalCardProductProps) =>
       >
         {/* Scroll Buttons */}
         <button
-          className='bg-gray-800 text-gray-200 shadow-md rounded-full p-2 absolute left-0 text-lg hidden md:block hover:bg-blue-600 hover:text-white transition'
+          className='bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] text-white shadow-md rounded-full p-2 absolute left-0 text-lg hidden md:block hover:opacity-90 transition'
           onClick={scrollLeft}
         >
           <FaAngleLeft />
         </button>
         <button
-          className='bg-gray-800 text-gray-200 shadow-md rounded-full p-2 absolute right-0 text-lg hidden md:block hover:bg-blue-600 hover:text-white transition'
+          className='bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] text-white shadow-md rounded-full p-2 absolute right-0 text-lg hidden md:block hover:opacity-90 transition'
           onClick={scrollRight}
         >
           <FaAngleRight />
@@ -78,15 +79,15 @@ const VerticalCardProduct = ({ category, heading }: VerticalCardProductProps) =>
               key={index}
               className='w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] bg-white rounded-md shadow'
             >
-              <div className='bg-gray-500 h-48 p-4 flex justify-center items-center animate-pulse rounded-t-md'></div>
+              <div className='bg-gray-300 h-48 p-4 flex justify-center items-center animate-pulse rounded-t-md'></div>
               <div className='p-4 grid gap-3'>
-                <div className='h-6 bg-gray-500 rounded-full animate-pulse'></div>
-                <div className='h-4 bg-gray-500 rounded-full animate-pulse'></div>
+                <div className='h-6 bg-gray-300 rounded-full animate-pulse'></div>
+                <div className='h-4 bg-gray-300 rounded-full animate-pulse'></div>
                 <div className='flex gap-3'>
-                  <div className='h-4 w-full bg-gray-500 rounded-full animate-pulse'></div>
-                  <div className='h-4 w-full bg-gray-500 rounded-full animate-pulse'></div>
+                  <div className='h-4 w-full bg-gray-300 rounded-full animate-pulse'></div>
+                  <div className='h-4 w-full bg-gray-300 rounded-full animate-pulse'></div>
                 </div>
-                <div className='h-8 bg-gray-500 rounded-full animate-pulse'></div>
+                <div className='h-8 bg-gray-300 rounded-full animate-pulse'></div>
               </div>
             </div>
           ))
@@ -94,10 +95,10 @@ const VerticalCardProduct = ({ category, heading }: VerticalCardProductProps) =>
           data.map((product) => (
             <div
               key={product.id}
-              className='w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] bg-white rounded-md shadow hover:shadow-xl hover:border-blue-500 border border-gray-300 transition'
+              className='w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] bg-white rounded-md shadow hover:shadow-lg hover:border-[#7B2CBF] border border-gray-300 transition'
             >
               <Link
-                href={`/product-details?id=${product.id}`}
+                href={`/product-details/${product.slug}`}
                 className='bg-gray-50 h-48 p-4 flex justify-center items-center relative rounded-t-md'
               >
                 <img
@@ -114,14 +115,14 @@ const VerticalCardProduct = ({ category, heading }: VerticalCardProductProps) =>
 
               <div className='p-4 grid gap-3'>
                 <Link
-                  href={`/product-details?id=${product.id}`}
-                  className='font-semibold text-base md:text-lg text-gray-900 line-clamp-1 hover:text-blue-600 transition'
+                  href={`/product-details/${product.slug}`}
+                  className='font-semibold text-base md:text-lg text-gray-900 line-clamp-1 hover:text-[#7B2CBF] transition'
                 >
                   {product?.productName}
                 </Link>
                 <p className='capitalize text-gray-500 text-sm'>{product?.category}</p>
                 <div className='flex gap-3'>
-                  <p className='text-blue-700 font-bold text-base'>
+                  <p className='text-[#7B2CBF] font-bold text-base'>
                     {displayKESCurrency(product?.sellingPrice)}
                   </p>
                   <p className='text-gray-400 line-through text-sm'>
@@ -134,7 +135,7 @@ const VerticalCardProduct = ({ category, heading }: VerticalCardProductProps) =>
                     className={`text-sm px-3 py-1 rounded-full font-medium shadow ${
                       product.stock === 0
                         ? 'bg-gray-400 text-white cursor-not-allowed'
-                        : 'bg-blue-700 hover:bg-blue-800 text-white transition'
+                        : 'bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] hover:opacity-90 text-white transition cursor-pointer'
                     }`}
                     onClick={(e) => product.stock > 0 && handleAddToCart(e, product.id)}
                     disabled={product.stock === 0}
@@ -142,8 +143,8 @@ const VerticalCardProduct = ({ category, heading }: VerticalCardProductProps) =>
                     {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
                   </button>
                   <Link
-                    href={`/product-details?id=${product.id}`}
-                    className='text-sm text-blue-700 hover:underline px-3 py-1'
+                    href={`/product-details/${product.slug}`}
+                    className='text-sm text-[#7B2CBF] hover:underline px-3 py-1'
                   >
                     See Details
                   </Link>

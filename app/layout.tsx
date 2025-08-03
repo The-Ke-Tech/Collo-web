@@ -8,18 +8,126 @@ const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'COLTECH - Your Tech & Office Partner',
+  title: 'COLLTECH - Tech & Office Supplies | Earphones, Routers, Printers & More',
   description:
-    'Shop earphones, routers, Bluetooth speakers, office supplies, and more at COLLTECH.',
+    'Shop high-quality tech gadgets and office supplies at COLLTECH. From earphones, routers, Bluetooth speakers, and printers to premium office essentials — we are your trusted tech & office partner in Kenya.',
+  keywords: [
+    'tech gadgets Kenya',
+    'office supplies Nairobi',
+    'earphones online shop',
+    'Bluetooth speakers Kenya',
+    'routers Nairobi',
+    'printers Kenya',
+    'COLLTECH shop'
+  ],
+  authors: [{ name: 'COLLTECH Team', url: 'https://colltechhub.com' }],
+  creator: 'COLLTECH',
+  publisher: 'COLLTECH',
+  openGraph: {
+    title: 'COLLTECH - Your Tech & Office Partner',
+    description:
+      'Find premium gadgets and office supplies at affordable prices. Shop earphones, routers, printers, and more at COLLTECH Kenya.',
+    url: process.env.NEXT_PUBLIC_BASE_URL,
+    siteName: 'COLLTECH',
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/opengraph-image.png`,
+        width: 1200,
+        height: 630,
+        alt: 'COLLTECH - Tech & Office Supplies',
+      },
+    ],
+    locale: 'en_KE',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'COLLTECH - Your Tech & Office Partner',
+    description:
+      'Shop tech gadgets & office supplies: earphones, routers, printers & more. COLLTECH is your trusted tech & office partner in Kenya.',
+    images: [`${process.env.NEXT_PUBLIC_BASE_URL}/opengraph-image.png`],
+    creator: '@COLLTECH_KE',
+  },
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_BASE_URL,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+  },
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+    shortcut: '/favicon.ico',
+  },
+  themeColor: '#00C2D1', // Updated to brand primary color
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://colltechhub.com';
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Meta verifications */}
+        <meta name="google-site-verification" content="73p9RpqwG7S8VmzC1VL25-2OArnPVs4dPMiBdyOkXIE" />
+        <meta name="yandex-verification" content="YOUR_YANDEX_VERIFICATION_CODE" />
+        <meta name="msvalidate.01" content="YOUR_BING_VERIFICATION_CODE" />
+
+        {/* JSON-LD: Organization + Website + BreadcrumbList */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "name": "COLLTECH",
+                "url": baseUrl,
+                "logo": `${baseUrl}/logo.png`,
+                "sameAs": [
+                  "https://www.facebook.com/share/1AsYch1TgY/",
+                  "https://x.com/Colltech_?t=jSzzUB5EdP_scsjNpjkSKA&s=08",
+                  "https://www.instagram.com/COLLTECH",
+                  "https://www.tiktok.com/@colltechaccessori?_t=ZM-8yZPmRqhauG&_r=1",
+                ],
+                "contactPoint": [
+                  {
+                    "@type": "ContactPoint",
+                    "telephone": "+254700000000",
+                    "contactType": "Customer Support",
+                    "areaServed": "KE",
+                    "availableLanguage": ["en", "sw"]
+                  }
+                ]
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "url": baseUrl,
+                "name": "COLLTECH",
+                "potentialAction": {
+                  "@type": "SearchAction",
+                  "target": `${baseUrl}/search?query={search_term_string}`,
+                  "query-input": "required name=search_term_string"
+                }
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                  { "@type": "ListItem", "position": 1, "name": "Home", "item": baseUrl },
+                  { "@type": "ListItem", "position": 2, "name": "Shop", "item": `${baseUrl}/shop` }
+                ]
+              }
+            ]),
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased 
-        bg-gradient-to-b from-black via-gray-900 to-gray-800 
-        text-gray-300 transition-colors duration-500`}
+        bg-gradient-to-b from-[#00C2D1] via-[#4B3F72] to-[#7B2CBF] 
+        text-gray-100 transition-colors duration-500`}
       >
         <ReduxProvider>
           <ClientLayout>{children}</ClientLayout>

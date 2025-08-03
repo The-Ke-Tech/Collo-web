@@ -29,20 +29,22 @@ model User {
 
 model Product {
   id           String   @id @default(uuid())
-  productName  String?
+  productName  String
+  slug         String   @unique   
   brandName    String?
   category     String?
   productImage String[] @default([])
   description  String?
   price        Float?
   sellingPrice Float?
-  stock        Int      @default(0)    // <--- NEW FIELD
+  stock        Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   cartItems    AddToCart[]
   orders       OrderProduct[]
 }
+
 
 
 enum ShippingStage {

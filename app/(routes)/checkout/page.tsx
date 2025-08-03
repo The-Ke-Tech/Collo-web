@@ -143,75 +143,49 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-200 min-h-screen">
-      <h2 className="text-3xl font-semibold mb-6 text-center text-white">
-        Checkout
-      </h2>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 bg-gradient-to-b from-[#00C2D1] via-[#4B3F72] to-[#7B2CBF] text-white min-h-screen rounded-lg shadow-lg">
+      <h2 className="text-3xl font-bold mb-6 text-center">Checkout</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Shipping Form */}
-        <div className="bg-gray-900 p-6 shadow rounded space-y-4 border border-gray-700">
-          <h3 className="text-lg font-medium mb-2 text-white">
-            Shipping Information
-          </h3>
+        <div className="bg-white/10 backdrop-blur-md p-6 shadow rounded-xl border border-white/20 space-y-4">
+          <h3 className="text-lg font-semibold mb-2">Shipping Information</h3>
           <div className="grid grid-cols-1 gap-4">
-            <input
-              type="text"
-              name="fullName"
-              placeholder="Full Name"
-              value={shippingInfo.fullName}
-              onChange={handleInputChange}
-              className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-red-500"
-              required
-            />
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Phone Number"
-              value={shippingInfo.phone}
-              onChange={handleInputChange}
-              className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-red-500"
-              required
-            />
-            <input
-              type="text"
-              name="address"
-              placeholder="Address (Street, Building)"
-              value={shippingInfo.address}
-              onChange={handleInputChange}
-              className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-red-500"
-              required
-            />
-            <input
-              type="text"
-              name="county"
-              placeholder="County"
-              value={shippingInfo.county}
-              onChange={handleInputChange}
-              className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-red-500"
-              required
-            />
-            <input
-              type="text"
-              name="city"
-              placeholder="Town/City"
-              value={shippingInfo.city}
-              onChange={handleInputChange}
-              className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-red-500"
-              required
-            />
+            {["fullName", "phone", "address", "county", "city"].map((field) => (
+              <input
+                key={field}
+                type={field === "phone" ? "tel" : "text"}
+                name={field}
+                placeholder={
+                  field === "fullName"
+                    ? "Full Name"
+                    : field === "phone"
+                    ? "Phone Number"
+                    : field === "address"
+                    ? "Address (Street, Building)"
+                    : field === "county"
+                    ? "County"
+                    : "Town/City"
+                }
+                value={shippingInfo[field as keyof ShippingInfo]}
+                onChange={handleInputChange}
+                className="bg-white/5 border border-white/20 rounded px-3 py-2 text-white placeholder-white/60 focus:outline-none focus:border-[#00C2D1] focus:ring focus:ring-[#00C2D1]/50"
+                required
+              />
+            ))}
           </div>
         </div>
 
         {/* Order Summary */}
-        <div className="bg-gray-900 p-6 shadow rounded flex flex-col justify-between border border-gray-700">
+        <div className="bg-white/10 backdrop-blur-md p-6 shadow rounded-xl border border-white/20 flex flex-col justify-between">
           <div>
-            <h3 className="text-lg font-medium mb-3 text-white">
-              Order Summary
-            </h3>
-            <ul className="divide-y divide-gray-700 text-sm">
+            <h3 className="text-lg font-semibold mb-3">Order Summary</h3>
+            <ul className="divide-y divide-white/20 text-sm">
               {items.map((item, idx) => (
-                <li key={idx} className="py-2 flex justify-between text-gray-300">
+                <li
+                  key={idx}
+                  className="py-2 flex justify-between text-white/90"
+                >
                   <span>
                     {item.productId.productName} × {item.quantity}
                   </span>
@@ -224,14 +198,14 @@ const CheckoutPage = () => {
               ))}
             </ul>
 
-            <div className="flex justify-between mt-4 font-semibold text-base text-white">
+            <div className="flex justify-between mt-4 font-bold text-base">
               <span>Total</span>
               <span>{displayKESCurrency(totalPrice)}</span>
             </div>
           </div>
 
           <button
-            className="mt-6 bg-green-600 hover:bg-green-700 text-white w-full py-3 rounded text-lg shadow"
+            className="mt-6 bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] hover:opacity-90 text-white w-full py-3 rounded-lg text-lg shadow-lg transition"
             onClick={handleConfirmAndPay}
           >
             Confirm & Pay via M-Pesa

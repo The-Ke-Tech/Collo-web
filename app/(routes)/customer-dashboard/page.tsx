@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 
 // ---------- TYPES ----------
 interface User {
@@ -89,55 +88,57 @@ export default function CustomerDashboard() {
   const handleNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-4 bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-200 rounded-lg shadow-lg">
+    <div className="max-w-5xl mx-auto py-8 px-4 bg-gradient-to-b from-cyan-950 via-gray-900 to-purple-950 text-gray-100 rounded-lg shadow-lg">
       {/* Profile Info */}
-      <div className="bg-gray-800 p-6 rounded-lg shadow mb-8">
+      <div className="bg-gradient-to-r from-cyan-800 to-purple-800 p-6 rounded-lg shadow mb-8 border border-purple-700">
         <h2 className="text-2xl font-semibold mb-4 text-white">
           Welcome, {user.name || "Customer"}
         </h2>
-        <p className="text-gray-300">Email: {user.email}</p>
-        <p className="text-gray-400">Member since: {new Date(user.createdAt).toLocaleDateString()}</p>
+        <p className="text-gray-200">Email: {user.email}</p>
+        <p className="text-gray-300">
+          Member since: {new Date(user.createdAt).toLocaleDateString()}
+        </p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-        <div className="bg-green-700 p-4 rounded shadow">
+        <div className="bg-gradient-to-r from-cyan-600 to-cyan-800 p-4 rounded shadow">
           <p className="text-xl font-bold text-white">
             KES {stats.totalSpent.toLocaleString()}
           </p>
-          <p className="text-gray-200">Total Spent</p>
+          <p className="text-cyan-100">Total Spent</p>
         </div>
-        <div className="bg-blue-700 p-4 rounded shadow">
+        <div className="bg-gradient-to-r from-purple-600 to-purple-800 p-4 rounded shadow">
           <p className="text-xl font-bold text-white">{stats.totalOrders}</p>
-          <p className="text-gray-200">Confirmed Orders</p>
+          <p className="text-purple-100">Confirmed Orders</p>
         </div>
-        <div className="bg-yellow-700 p-4 rounded shadow">
+        <div className="bg-gradient-to-r from-pink-600 to-purple-700 p-4 rounded shadow">
           <p className="text-xl font-bold text-white">{stats.activeOrders}</p>
-          <p className="text-gray-200">Active Orders</p>
+          <p className="text-pink-100">Active Orders</p>
         </div>
       </div>
 
       {/* Active Orders */}
       {activeOrders.length > 0 && (
-        <div className="bg-gray-800 p-6 rounded-lg shadow mb-8">
+        <div className="bg-gradient-to-r from-cyan-900 to-purple-900 p-6 rounded-lg shadow mb-8 border border-purple-700">
           <h3 className="text-xl font-semibold mb-4 text-white">Active Orders</h3>
           <ul className="space-y-4">
             {activeOrders.map((order) => (
-              <li key={order.id} className="border border-gray-700 p-4 rounded">
+              <li key={order.id} className="border border-gray-700 p-4 rounded bg-gray-800">
                 <p className="font-semibold text-gray-200">Order ID: {order.id}</p>
                 <p className="text-sm text-gray-400">
                   Stage:{" "}
                   <span
                     className={`px-2 py-1 rounded text-xs font-medium
                       ${order.shippingStage === "PACKING"
-                        ? "bg-yellow-600 text-white"
+                        ? "bg-yellow-500 text-gray-900"
                         : order.shippingStage === "SHIPPED"
-                        ? "bg-blue-600 text-white"
+                        ? "bg-blue-500 text-white"
                         : order.shippingStage === "IN_TRANSIT"
-                        ? "bg-purple-600 text-white"
+                        ? "bg-purple-500 text-white"
                         : order.shippingStage === "PENDING"
-                        ? "bg-gray-600 text-white"
-                        : "bg-green-600 text-white"
+                        ? "bg-gray-500 text-white"
+                        : "bg-green-500 text-gray-900"
                       }`}
                   >
                     {order.shippingStage}
@@ -155,14 +156,14 @@ export default function CustomerDashboard() {
       )}
 
       {/* Orders Table */}
-      <div className="bg-gray-800 p-6 rounded-lg shadow overflow-x-auto">
+      <div className="bg-gradient-to-r from-cyan-900 to-purple-900 p-6 rounded-lg shadow overflow-x-auto border border-purple-700">
         <h3 className="text-xl font-semibold mb-4 text-white">Order History</h3>
         {orders.length === 0 ? (
           <p className="text-gray-400">You have no orders yet.</p>
         ) : (
           <>
             <table className="min-w-full border border-gray-700 rounded-lg">
-              <thead className="bg-gray-700">
+              <thead className="bg-gray-800">
                 <tr>
                   <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">Order ID</th>
                   <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">Date</th>
@@ -174,7 +175,7 @@ export default function CustomerDashboard() {
               </thead>
               <tbody>
                 {paginatedOrders.map((order) => (
-                  <tr key={order.id} className="border-t border-gray-700 hover:bg-gray-700">
+                  <tr key={order.id} className="border-t border-gray-700 hover:bg-gray-800">
                     <td className="px-4 py-2 text-sm font-mono text-gray-200">{order.id}</td>
                     <td className="px-4 py-2 text-sm text-gray-300">
                       {new Date(order.createdAt).toLocaleDateString()}
@@ -186,17 +187,17 @@ export default function CustomerDashboard() {
                         ))}
                       </ul>
                     </td>
-                    <td className="px-4 py-2 text-sm font-semibold text-gray-200">
+                    <td className="px-4 py-2 text-sm font-semibold text-gray-100">
                       KES {order.totalAmount.toLocaleString()}
                     </td>
                     <td className="px-4 py-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded text-xs font-medium 
                           ${order.paymentStatus === "CONFIRMED"
-                            ? "bg-green-600 text-white"
+                            ? "bg-green-500 text-gray-900"
                             : order.paymentStatus === "FAILED"
-                              ? "bg-red-600 text-white"
-                              : "bg-yellow-600 text-white"
+                              ? "bg-red-500 text-white"
+                              : "bg-yellow-500 text-gray-900"
                           }`}
                       >
                         {order.paymentStatus}
@@ -222,7 +223,7 @@ export default function CustomerDashboard() {
                             alert("Could not download receipt.");
                           }
                         }}
-                        className="text-blue-400 text-sm hover:underline"
+                        className="text-cyan-400 text-sm hover:underline"
                       >
                         Download Receipt
                       </button>
@@ -237,7 +238,7 @@ export default function CustomerDashboard() {
               <button
                 onClick={handlePrev}
                 disabled={currentPage === 1}
-                className={`px-4 py-2 rounded border border-gray-600 text-gray-300 ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-700"}`}
+                className={`px-4 py-2 rounded border border-gray-600 text-gray-300 ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-800"}`}
               >
                 Prev
               </button>
@@ -247,7 +248,7 @@ export default function CustomerDashboard() {
               <button
                 onClick={handleNext}
                 disabled={currentPage === totalPages}
-                className={`px-4 py-2 rounded border border-gray-600 text-gray-300 ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-700"}`}
+                className={`px-4 py-2 rounded border border-gray-600 text-gray-300 ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-800"}`}
               >
                 Next
               </button>

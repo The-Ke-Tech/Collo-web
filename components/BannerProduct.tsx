@@ -47,19 +47,19 @@ const BannerProduct = () => {
 
     return (
         <div className="container mx-auto px-4 rounded-lg overflow-hidden">
-            <div className="h-56 md:h-72 w-full relative bg-gradient-to-b from-black via-gray-900 to-gray-800">
+            <div className="h-56 md:h-72 w-full relative bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF]">
                 {/* Controls */}
                 <div className="absolute z-10 h-full w-full md:flex items-center hidden">
                     <div className="flex justify-between w-full text-2xl px-4">
                         <button
                             onClick={preveImage}
-                            className="bg-white/80 hover:bg-white text-gray-800 shadow-lg rounded-full p-2 transition-transform transform hover:scale-110"
+                            className="bg-white hover:bg-gray-100 text-gray-800 shadow-md rounded-full p-2 transition-transform transform hover:scale-110 border border-gray-200"
                         >
                             <FaAngleLeft />
                         </button>
                         <button
                             onClick={nextImage}
-                            className="bg-white/80 hover:bg-white text-gray-800 shadow-lg rounded-full p-2 transition-transform transform hover:scale-110"
+                            className="bg-white hover:bg-gray-100 text-gray-800 shadow-md rounded-full p-2 transition-transform transform hover:scale-110 border border-gray-200"
                         >
                             <FaAngleRight />
                         </button>

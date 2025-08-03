@@ -1,24 +1,8 @@
-// app/api/products/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/common/lib/db";
+import slugify from "slugify";
 
-// GET: Fetch all products
-export async function GET() {
-  try {
-    const products = await db.product.findMany({
-      orderBy: { createdAt: "desc" },
-    });
-    return NextResponse.json({ success: true, data: products });
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    return NextResponse.json(
-      { success: false, message: "Failed to fetch products" },
-      { status: 500 }
-    );
-  }
-}
-
-// POST: Add new product
+// Create product
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -40,8 +24,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const slug = slugify(productName, { lower: true, strict: true });
+
     const newProduct = await db.product.create({
       data: {
+        slug,
         productName,
         brandName,
         category,
@@ -58,6 +45,22 @@ export async function POST(req: NextRequest) {
     console.error("Error creating product:", error);
     return NextResponse.json(
       { success: false, message: "Failed to create product" },
+      { status: 500 }
+    );
+  }
+}
+
+// Get all products
+export async function GET() {
+  try {
+    const products = await db.product.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return NextResponse.json({ success: true, data: products });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to fetch products" },
       { status: 500 }
     );
   }

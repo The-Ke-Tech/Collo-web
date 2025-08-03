@@ -77,7 +77,7 @@ const Cart = () => {
     const totalPrice = data.reduce((sum, curr) => sum + (curr.quantity * curr?.productId?.sellingPrice), 0);
 
     return (
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-200 min-h-screen py-6">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-cyan-950 via-gray-900 to-purple-950 text-gray-100 min-h-screen py-6">
             <div className="text-center text-lg my-3">
                 {data.length === 0 && !loading && <p className="bg-gray-800 py-5 rounded shadow">No Data</p>}
             </div>
@@ -90,7 +90,7 @@ const Cart = () => {
                         ))
                     ) : (
                         data.map((product) => (
-                            <div key={product._id} className="bg-gray-900 border border-gray-700 rounded flex flex-col sm:flex-row mb-4 overflow-hidden shadow">
+                            <div key={product._id} className="bg-gradient-to-r from-cyan-900 to-purple-900 border border-purple-700 rounded flex flex-col sm:flex-row mb-4 overflow-hidden shadow">
                                 <div className="w-full sm:w-32 h-40 sm:h-32 bg-gray-800 flex-shrink-0">
                                     <img
                                         src={product.productId?.productImage?.[0] || '/placeholder.png'}
@@ -101,21 +101,21 @@ const Cart = () => {
                                 <div className="flex-1 p-3 relative">
                                     <button
                                         onClick={() => deleteCartProduct(product._id)}
-                                        className="absolute top-2 right-2 text-red-500 p-1 hover:bg-red-600 hover:text-white rounded-full"
+                                        className="absolute top-2 right-2 text-pink-400 p-1 hover:bg-pink-600 hover:text-white rounded-full"
                                     >
                                         <MdDelete size={20} />
                                     </button>
                                     <h2 className="text-base sm:text-lg font-medium line-clamp-1 text-white">
                                         {product.productId.productName}
                                     </h2>
-                                    <p className="text-gray-400 text-sm mb-2 capitalize">{product.productId.category}</p>
+                                    <p className="text-gray-300 text-sm mb-2 capitalize">{product.productId.category}</p>
                                     <div className="flex justify-between text-sm sm:text-base font-medium mb-1">
-                                        <p className="text-red-400">{displayKESCurrency(product.productId.sellingPrice)}</p>
-                                        <p className="text-gray-200">{displayKESCurrency(product.productId.sellingPrice * product.quantity)}</p>
+                                        <p className="text-cyan-400">{displayKESCurrency(product.productId.sellingPrice)}</p>
+                                        <p className="text-gray-100">{displayKESCurrency(product.productId.sellingPrice * product.quantity)}</p>
                                     </div>
                                     <div className="flex items-center gap-2 mt-2">
                                         <button
-                                            className="w-7 h-7 text-sm border border-red-500 text-red-500 hover:bg-red-600 hover:text-white rounded"
+                                            className="w-7 h-7 text-sm border border-pink-500 text-pink-400 hover:bg-pink-600 hover:text-white rounded"
                                             onClick={() => decraseQty(product._id, product.quantity)}
                                         >
                                             -
@@ -126,7 +126,7 @@ const Cart = () => {
                                         <button
                                             className={`w-7 h-7 text-sm border rounded ${product.quantity >= product.productId.stock
                                                     ? 'border-gray-500 text-gray-500 cursor-not-allowed'
-                                                    : 'border-red-500 text-red-500 hover:bg-red-600 hover:text-white'
+                                                    : 'border-cyan-500 text-cyan-400 hover:bg-cyan-600 hover:text-white'
                                                 }`}
                                             onClick={() => increaseQty(product._id, product.quantity)}
                                             disabled={product.quantity >= product.productId.stock}
@@ -135,7 +135,7 @@ const Cart = () => {
                                         </button>
                                     </div>
                                     {product.quantity >= product.productId.stock && (
-                                        <p className="text-xs text-red-400 mt-1">
+                                        <p className="text-xs text-pink-400 mt-1">
                                             Only {product.productId.stock} in stock
                                         </p>
                                     )}
@@ -149,18 +149,20 @@ const Cart = () => {
                     {loading ? (
                         <div className="h-36 bg-gray-700 border border-gray-600 animate-pulse rounded"></div>
                     ) : (
-                        <div className="bg-gray-900 rounded shadow p-4">
-                            <h2 className="text-white bg-red-600 px-4 py-2 rounded-t font-semibold">Summary</h2>
-                            <div className="flex justify-between py-2 px-2 text-gray-300 text-sm sm:text-base font-medium">
+                        <div className="bg-gradient-to-r from-cyan-900 to-purple-900 rounded shadow border border-purple-700">
+                            <h2 className="text-white bg-gradient-to-r from-cyan-700 to-purple-700 px-4 py-2 rounded-t font-semibold">
+                                Summary
+                            </h2>
+                            <div className="flex justify-between py-2 px-2 text-gray-200 text-sm sm:text-base font-medium">
                                 <p>Quantity</p>
                                 <p>{totalQty}</p>
                             </div>
-                            <div className="flex justify-between py-2 px-2 text-gray-300 text-sm sm:text-base font-medium border-t border-gray-700">
+                            <div className="flex justify-between py-2 px-2 text-gray-200 text-sm sm:text-base font-medium border-t border-gray-700">
                                 <p>Total Price</p>
                                 <p>{displayKESCurrency(totalPrice)}</p>
                             </div>
                             <button
-                                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white w-full py-2 rounded"
+                                className="mt-4 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white w-full py-2 rounded"
                                 onClick={() => handlePayment(data)}
                             >
                                 Pay via M-Pesa

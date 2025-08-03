@@ -18,27 +18,39 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get('token')?.value;
   const { pathname } = req.nextUrl;
 
-  const PUBLIC_ROUTES = ['/', '/login', '/register', '/search-product', '/product-details', '/api/public', '/api/webhook', '/api/search-product', '/api/product-details', ];
+  const PUBLIC_ROUTES = [
+    '/login',
+    '/register',
+    '/search-product',
+    '/product-details',
+    '/api/public',
+    '/api/webhook',
+    '/api/search-product',
+    '/api/product-details',
+    '/api/auth/refresh-token'
+  ];
   const ADMIN_ROUTES = ['/admin-panel', '/admin', '/api/admin'];
   const GENERAL_ROUTES = ['/account', '/cart', '/orders', '/customer-dashboard', '/api/dashboard/customer'];
 
-  if (PUBLIC_ROUTES.some((p) => pathname.startsWith(p))) return NextResponse.next();
+  // Public routes bypass authentication
+  if (PUBLIC_ROUTES.includes(pathname) || PUBLIC_ROUTES.some((p) => pathname.startsWith(p + '/'))) {
+    return NextResponse.next();
+  }
 
+  // Require token for everything else
   if (!token) return NextResponse.redirect(new URL('/login', req.url));
 
   const decoded = await verifyJWT(token);
   if (!decoded?.id || !decoded?.role) return NextResponse.redirect(new URL('/login', req.url));
-console.log("Decoded token:", decoded);
-console.log("Decoded Middleware Token:", decoded);
 
-  const role = (decoded.role as string).toLowerCase();
+  const role = typeof decoded.role === 'string' ? decoded.role.toLowerCase() : '';
 
   // Admin-only pages
   if (ADMIN_ROUTES.some((p) => pathname.startsWith(p)) && role !== ROLE.ADMIN) {
     return NextResponse.redirect(new URL('/unauthorized', req.url));
   }
 
-  // General-user pages (must be general or admin)
+  // General-user pages
   if (GENERAL_ROUTES.some((p) => pathname.startsWith(p)) && ![ROLE.GENERAL, ROLE.ADMIN].includes(role)) {
     return NextResponse.redirect(new URL('/unauthorized', req.url));
   }
@@ -54,6 +66,7 @@ export const config = {
     '/cart/:path*',
     '/orders/:path*',
     '/customer-dashboard/:path*',
+    '/api/auth/refresh-token',
     '/api/:path*',
   ],
 };

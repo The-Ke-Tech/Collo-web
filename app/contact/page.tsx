@@ -1,75 +1,82 @@
-'use client';
-import PageLayout from "@/components/page-layout";
-import { useState } from "react";
-import { toast } from "react-toastify";
+import { Metadata } from "next";
+import ContactClient from "./_components/contact";
 
-export default function Contact() {
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [loading, setLoading] = useState(false);
+export const metadata: Metadata = {
+  title: "Contact COLLTECH - Get in Touch with Us",
+  description:
+    "Have questions or need help? Contact COLLTECH today. Our team is here to assist you with tech gadgets, office supplies, orders, and more.",
+  keywords: [
+    "COLLTECH contact",
+    "customer support Kenya",
+    "tech help",
+    "office supplies contact",
+  ],
+  openGraph: {
+    title: "Contact COLLTECH - We're Here to Help",
+    description:
+      "Need help with your order or have a query? Contact COLLTECH via phone, email, or form. We're here to support you.",
+    url: `${process.env.NEXT_PUBLIC_BASE_URL}/contact`,
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/opengraph-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Contact COLLTECH",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact COLLTECH - We're Here to Help",
+    description:
+      "Get in touch with COLLTECH for assistance with your tech and office needs in Kenya.",
+    images: [`${process.env.NEXT_PUBLIC_BASE_URL}/opengraph-image.png`],
+  },
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/contact`,
+  },
+};
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        toast.success(data.message);
-        setForm({ name: "", email: "", message: "" });
-      } else {
-        toast.error(data.message || "Failed to send message");
-      }
-    } catch (error) {
-      toast.error("Network error. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+export default function ContactPage() {
   return (
-    <PageLayout title="Contact Us">
-      <p className="text-gray-300">
-        We'd love to hear from you. Fill out the form below or reach us via email or phone.
-      </p>
-      <form onSubmit={handleSubmit} className="grid gap-4 mt-6">
-        <input
-          type="text"
-          placeholder="Your Name"
-          className="p-3 rounded bg-gray-800 text-gray-200 border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Your Email"
-          className="p-3 rounded bg-gray-800 text-gray-200 border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          required
-        />
-        <textarea
-          placeholder="Your Message"
-          className="p-3 rounded bg-gray-800 text-gray-200 border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
-          rows={5}
-          value={form.message}
-          onChange={(e) => setForm({ ...form, message: e.target.value })}
-          required
-        ></textarea>
-        <button
-          type="submit"
-          disabled={loading}
-          className={`bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          {loading ? "Sending..." : "Send Message"}
-        </button>
-      </form>
-    </PageLayout>
+    <>
+      {/* JSON-LD Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            name: "Contact COLLTECH",
+            description:
+              "Get in touch with COLLTECH for inquiries, orders, or support. We're here to help you with tech gadgets and office supplies.",
+            url: `${process.env.NEXT_PUBLIC_BASE_URL}/contact`,
+            publisher: {
+              "@type": "Organization",
+              name: "COLLTECH",
+              url: process.env.NEXT_PUBLIC_BASE_URL,
+              logo: `${process.env.NEXT_PUBLIC_BASE_URL}/logo.png`,
+              "sameAs": [
+                  "https://www.facebook.com/share/1AsYch1TgY/",
+                  "https://x.com/Colltech_?t=jSzzUB5EdP_scsjNpjkSKA&s=08",
+                  "https://www.instagram.com/COLLTECH",
+                  "https://www.tiktok.com/@colltechaccessori?_t=ZM-8yZPmRqhauG&_r=1",
+                ],
+              contactPoint: [
+                {
+                  "@type": "ContactPoint",
+                  telephone: "+254700000000",
+                  contactType: "Customer Support",
+                  areaServed: "KE",
+                  availableLanguage: "en",
+                },
+              ],
+            },
+          }),
+        }}
+      />
+      <ContactClient />
+    </>
   );
 }

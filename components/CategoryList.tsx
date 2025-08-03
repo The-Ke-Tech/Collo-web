@@ -42,13 +42,13 @@ const CategoryList = () => {
   }, []);
 
   return (
-    <div className="bg-gradient-to-b from-black via-gray-900 to-gray-800 py-6 px-4 rounded-lg shadow-inner">
-      <h2 className="text-xl font-bold text-white mb-4">Shop by Category</h2>
+    <div className="bg-white py-6 px-4 rounded-lg shadow-md border border-gray-200">
+      <h2 className="text-xl font-bold text-gray-800 mb-4">Shop by Category</h2>
       <div className="flex items-center gap-6 justify-start overflow-x-auto scrollbar-none">
         {loading ? (
           categoryLoading.map((_, index) => (
             <div
-              className="h-16 w-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-gray-300 animate-pulse"
+              className="h-16 w-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-gray-200 animate-pulse"
               key={'categoryLoading' + index}
             />
           ))
@@ -59,20 +59,20 @@ const CategoryList = () => {
               className="cursor-pointer text-center group"
               key={product.category}
             >
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden p-3 bg-gray-100 flex items-center justify-center shadow-md border border-gray-300 group-hover:border-blue-500 group-hover:shadow-lg transition">
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden p-3 bg-gray-50 flex items-center justify-center shadow-sm border border-gray-300 group-hover:border-transparent group-hover:shadow-lg group-hover:bg-gradient-to-r group-hover:from-[#00C2D1] group-hover:to-[#7B2CBF] transition">
                 <img
                   src={product.productImage?.[0] || '/placeholder.png'}
                   alt={product.category}
                   className="h-full object-scale-down mix-blend-multiply group-hover:scale-125 transition-transform duration-300"
                 />
               </div>
-              <p className="text-sm md:text-base capitalize mt-2 text-gray-200 group-hover:text-white transition">
+              <p className="text-sm md:text-base capitalize mt-2 text-gray-700 group-hover:text-[#7B2CBF] transition">
                 {product.category}
               </p>
             </Link>
           ))
         ) : (
-          <p className="text-gray-400 italic">No categories found.</p>
+          <p className="text-gray-500 italic">No categories found.</p>
         )}
       </div>
     </div>

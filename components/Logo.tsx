@@ -8,7 +8,7 @@ export const Logo = ({ height = 40, width = 40 }: { height?: number; width?: num
       width={width}
       alt="logo"
       src="/logo.png"
-      className="bg-white rounded-full p-1"
+      className="bg-green-100 rounded-full p-1"
     />
   );
 };

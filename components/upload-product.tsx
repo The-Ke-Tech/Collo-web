@@ -23,7 +23,7 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
     description: string;
     price: string;
     sellingPrice: string;
-    stock: string;  // <-- Added
+    stock: string;
   }
 
   const [data, setData] = useState<ProductData>({
@@ -34,7 +34,7 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
     description: "",
     price: "",
     sellingPrice: "",
-    stock: "", // <-- Added
+    stock: "",
   });
 
   const [openFullScreenImage, setOpenFullScreenImage] = useState(false);
@@ -81,7 +81,7 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
           ...data,
           price: parseFloat(data.price),
           sellingPrice: parseFloat(data.sellingPrice),
-          stock: parseInt(data.stock, 10), // <-- Added
+          stock: parseInt(data.stock, 10),
         }),
       });
 
@@ -102,12 +102,12 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
 
   return (
     <div className="fixed w-full h-full bg-black/70 backdrop-blur-sm top-0 left-0 right-0 bottom-0 flex justify-center items-center z-50">
-      <div className="bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-300 p-4 rounded-xl w-full max-w-2xl h-full max-h-[90%] overflow-hidden shadow-2xl border border-gray-700">
+      <div className="bg-gradient-to-b from-[#00C2D1] via-[#4B3F72] to-[#7B2CBF] text-gray-100 p-5 rounded-xl w-full max-w-2xl h-full max-h-[90%] overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="flex justify-between items-center pb-3 border-b border-gray-700">
-          <h2 className="font-bold text-lg text-white">Upload Product</h2>
+        <div className="flex justify-between items-center pb-3 border-b border-gray-300/30">
+          <h2 className="font-bold text-xl text-white">Upload Product</h2>
           <div
-            className="text-2xl text-gray-300 hover:text-white cursor-pointer transition"
+            className="text-2xl text-white hover:text-gray-300 cursor-pointer transition"
             onClick={onClose}
           >
             <CgClose />
@@ -116,35 +116,35 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
 
         {/* Form */}
         <form
-          className="grid gap-2 p-4 overflow-y-scroll h-full pb-5"
+          className="grid gap-3 p-4 overflow-y-scroll h-full pb-6"
           onSubmit={handleSubmit}
         >
-          <label className="text-gray-200 font-medium">Product Name:</label>
+          <label className="text-white font-medium">Product Name:</label>
           <input
             type="text"
             name="productName"
             value={data.productName}
             onChange={handleOnChange}
-            className="p-2 bg-gray-800 border border-gray-600 rounded text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-700"
+            className="p-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-300 focus:border-[#7B2CBF] focus:ring focus:ring-[#7B2CBF]/40"
             required
           />
 
-          <label className="text-gray-200 font-medium">Brand Name:</label>
+          <label className="text-white font-medium">Brand Name:</label>
           <input
             type="text"
             name="brandName"
             value={data.brandName}
             onChange={handleOnChange}
-            className="p-2 bg-gray-800 border border-gray-600 rounded text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-700"
+            className="p-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-300 focus:border-[#7B2CBF] focus:ring focus:ring-[#7B2CBF]/40"
             required
           />
 
-          <label className="text-gray-200 font-medium">Category:</label>
+          <label className="text-white font-medium">Category:</label>
           <select
             name="category"
             value={data.category}
             onChange={handleOnChange}
-            className="p-2 bg-gray-800 border border-gray-600 rounded text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-700"
+            className="p-2 bg-white/10 border border-white/20 rounded text-black focus:border-[#7B2CBF] focus:ring focus:ring-[#7B2CBF]/40"
             required
           >
             <option value="">Select Category</option>
@@ -155,10 +155,10 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
             ))}
           </select>
 
-          <label className="text-gray-200 font-medium">Product Image:</label>
+          <label className="text-white font-medium">Product Image:</label>
           <label htmlFor="uploadImageInput">
-            <div className="p-2 bg-gray-800 border border-gray-600 rounded h-32 flex justify-center items-center cursor-pointer">
-              <div className="text-blue-400 flex flex-col items-center gap-2">
+            <div className="p-2 bg-white/10 border border-white/20 rounded h-32 flex justify-center items-center cursor-pointer hover:border-[#00C2D1] transition">
+              <div className="text-[#00C2D1] flex flex-col items-center gap-2">
                 <FaCloudUploadAlt className="text-4xl" />
                 <p className="text-sm">Upload Product Image</p>
                 <input
@@ -179,7 +179,7 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
                   <img
                     src={img}
                     alt="Uploaded"
-                    className="w-20 h-20 object-cover border border-gray-600 rounded cursor-pointer"
+                    className="w-20 h-20 object-cover border border-white/20 rounded cursor-pointer"
                     onClick={() => {
                       setFullScreenImage(img);
                       setOpenFullScreenImage(true);
@@ -195,54 +195,53 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
               ))}
             </div>
           ) : (
-            <p className="text-gray-400 text-xs">
+            <p className="text-gray-200 text-xs">
               *Please upload at least one image
             </p>
           )}
 
-          <label className="text-gray-200 font-medium">Price:</label>
+          <label className="text-white font-medium">Price:</label>
           <input
             type="number"
             name="price"
             value={data.price}
             onChange={handleOnChange}
-            className="p-2 bg-gray-800 border border-gray-600 rounded text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-700"
+            className="p-2 bg-white/10 border border-white/20 rounded text-white focus:border-[#7B2CBF] focus:ring focus:ring-[#7B2CBF]/40"
             required
           />
 
-          <label className="text-gray-200 font-medium">Selling Price:</label>
+          <label className="text-white font-medium">Selling Price:</label>
           <input
             type="number"
             name="sellingPrice"
             value={data.sellingPrice}
             onChange={handleOnChange}
-            className="p-2 bg-gray-800 border border-gray-600 rounded text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-700"
+            className="p-2 bg-white/10 border border-white/20 rounded text-white focus:border-[#7B2CBF] focus:ring focus:ring-[#7B2CBF]/40"
             required
           />
 
-          {/* Stock Input */}
-          <label className="text-gray-200 font-medium">Stock:</label>
+          <label className="text-white font-medium">Stock:</label>
           <input
             type="number"
             name="stock"
             value={data.stock}
             onChange={handleOnChange}
             min={0}
-            className="p-2 bg-gray-800 border border-gray-600 rounded text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-700"
+            className="p-2 bg-white/10 border border-white/20 rounded text-white focus:border-[#7B2CBF] focus:ring focus:ring-[#7B2CBF]/40"
             required
           />
 
-          <label className="text-gray-200 font-medium">Description:</label>
+          <label className="text-white font-medium">Description:</label>
           <textarea
             name="description"
             value={data.description}
             onChange={handleOnChange}
-            className="h-28 bg-gray-800 border border-gray-600 resize-none p-1 rounded text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-700"
+            className="h-28 bg-white/10 border border-white/20 resize-none p-2 rounded text-white focus:border-[#7B2CBF] focus:ring focus:ring-[#7B2CBF]/40"
             placeholder="Enter product description"
             required
           />
 
-          <button className="mt-4 px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded transition">
+          <button className="mt-4 px-3 py-2 bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] text-white hover:opacity-90 rounded transition cursor-pointer">
             Upload Product
           </button>
         </form>
