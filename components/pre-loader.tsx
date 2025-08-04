@@ -33,7 +33,7 @@ export default function Preloader() {
 
       {/* Company Name */}
       <motion.h1
-        className="text-3xl font-extrabold text-white tracking-wide drop-shadow-md"
+        className="text-3xl font-extrabold text-white tracking-wide drop-shadow-md text-center justify-center items-center"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}

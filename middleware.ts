@@ -1,4 +1,3 @@
-// middleware.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 import ROLE from './common/role';
@@ -18,26 +17,28 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get('token')?.value;
   const { pathname } = req.nextUrl;
 
+  // PUBLIC ROUTES (No Auth Needed)
   const PUBLIC_ROUTES = [
     '/login',
     '/register',
+    '/forgot-password',
     '/search-product',
     '/product-details',
+    '/api/auth/login',
+    '/api/auth/signup',
+    '/api/auth/refresh-token',
     '/api/public',
     '/api/webhook',
     '/api/search-product',
     '/api/product-details',
-    '/api/auth/refresh-token'
   ];
-  const ADMIN_ROUTES = ['/admin-panel', '/admin', '/api/admin'];
-  const GENERAL_ROUTES = ['/account', '/cart', '/orders', '/customer-dashboard', '/api/dashboard/customer'];
 
-  // Public routes bypass authentication
-  if (PUBLIC_ROUTES.includes(pathname) || PUBLIC_ROUTES.some((p) => pathname.startsWith(p + '/'))) {
+  // If route is public, skip authentication
+  if (PUBLIC_ROUTES.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
 
-  // Require token for everything else
+  // Check token for private routes
   if (!token) return NextResponse.redirect(new URL('/login', req.url));
 
   const decoded = await verifyJWT(token);
@@ -45,12 +46,13 @@ export async function middleware(req: NextRequest) {
 
   const role = typeof decoded.role === 'string' ? decoded.role.toLowerCase() : '';
 
-  // Admin-only pages
-  if (ADMIN_ROUTES.some((p) => pathname.startsWith(p)) && role !== ROLE.ADMIN) {
+  // Admin-only routes
+  if (pathname.startsWith('/admin') && role !== ROLE.ADMIN) {
     return NextResponse.redirect(new URL('/unauthorized', req.url));
   }
 
-  // General-user pages
+  // General-user routes
+  const GENERAL_ROUTES = ['/account', '/cart', '/orders', '/customer-dashboard'];
   if (GENERAL_ROUTES.some((p) => pathname.startsWith(p)) && ![ROLE.GENERAL, ROLE.ADMIN].includes(role)) {
     return NextResponse.redirect(new URL('/unauthorized', req.url));
   }
@@ -60,13 +62,13 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/admin-panel/:path*',
     '/admin/:path*',
+    '/admin-panel/:path*',
     '/account/:path*',
     '/cart/:path*',
     '/orders/:path*',
     '/customer-dashboard/:path*',
-    '/api/auth/refresh-token',
-    '/api/:path*',
+    '/api/dashboard/:path*',   // only protect dashboard APIs
+    '/api/admin/:path*',       // only protect admin APIs
   ],
 };

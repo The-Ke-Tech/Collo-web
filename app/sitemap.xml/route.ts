@@ -22,7 +22,7 @@ export async function GET() {
     )
   ).slice(0, 20);
 
-  const staticPages = ["", "faq", "support", "contact", "returns"];
+  const staticPages = ["", "faq", "support", "contact", "returns", "category-product", "about-us", "blog"];
 
   const urls = [
     // Static pages
