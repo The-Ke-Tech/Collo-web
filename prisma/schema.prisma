@@ -19,12 +19,13 @@ model User {
   email      String   @unique
   password   String?
   profilePic String?
-  role       String?
+  role       String?   @default("general")
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   orders     Order[]
   cartItems  AddToCart[]
+  resetTokens PasswordResetToken[]
 }
 
 model Product {
@@ -112,3 +113,11 @@ model AddToCart {
   @@unique([productId, userId]) // Ensures one cart entry per product per user
 }
 
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}

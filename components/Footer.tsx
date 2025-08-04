@@ -13,30 +13,41 @@ const Footer = () => {
   return (
     <footer className="bg-gradient-to-b from-white via-gray-50 to-white text-gray-700">
       <div className="container mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-        
+
         {/* Brand Section */}
         <div>
           <h2 className="text-3xl font-extrabold text-[#00C2D1] mb-4">COLLTECH</h2>
           <p className="text-sm leading-relaxed text-gray-600">
-            Your trusted store for <span className="text-gray-900 font-medium">quality tech & office essentials</span> — 
-            from earphones & routers to paper reams & Bluetooth speakers. 
+            Your trusted store for <span className="text-gray-900 font-medium">quality tech & office essentials</span> —
+            from earphones & routers to paper reams & Bluetooth speakers.
             Shop smart, shop COLLTECH.
           </p>
 
           {/* About & Blog Links */}
-<div className="mt-4 flex space-x-4">
-  <Link href="/about-us" className="text-sm text-[#7B2CBF] hover:underline">About Us</Link>
-  <Link href="/blog" className="text-sm text-[#7B2CBF] hover:underline">Blog</Link>
-</div>
-
+          <div className="mt-6 bg-gradient-to-r from-[#00C2D1] via-[#4B3F72] to-[#7B2CBF] p-4 rounded-xl shadow-md">
+            <div className="flex justify-center space-x-6">
+              <Link
+                href="/about-us"
+                className="text-sm text-white font-semibold hover:underline hover:text-gray-200 transition"
+              >
+                About Us
+              </Link>
+              <Link
+                href="/blog"
+                className="text-sm text-white font-semibold hover:underline hover:text-gray-200 transition"
+              >
+                Blog
+              </Link>
+            </div>
+          </div>
 
           {/* Social Icons */}
           <div className="flex items-center space-x-3 mt-6">
             {socialLinks.map(({ icon: Icon, url }, i) => (
-              <a 
-                key={i} 
-                href={url} 
-                target="_blank" 
+              <a
+                key={i}
+                href={url}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-gray-200 text-gray-600 transition relative group"
               >
