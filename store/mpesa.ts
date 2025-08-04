@@ -69,7 +69,7 @@ export async function initiateMpesaStkPush(payload: StkPushPayload) {
   try {
     // 1. Get access token
     const authRes = await axios.get(
-      'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
+      'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
       {
         auth: {
           username: consumerKey,
@@ -82,7 +82,7 @@ export async function initiateMpesaStkPush(payload: StkPushPayload) {
 
     // 2. Initiate STK Push
     const stkRes = await axios.post(
-      'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
+      'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
       {
         BusinessShortCode: shortCode,
         Password: password,

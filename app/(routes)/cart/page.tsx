@@ -162,7 +162,7 @@ const Cart = () => {
                                 <p>{displayKESCurrency(totalPrice)}</p>
                             </div>
                             <button
-                                className="mt-4 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white w-full py-2 rounded"
+                                className="mt-4 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white w-full py-2 rounded cursor-pointer"
                                 onClick={() => handlePayment(data)}
                             >
                                 Pay via M-Pesa

@@ -205,7 +205,7 @@ const CheckoutPage = () => {
           </div>
 
           <button
-            className="mt-6 bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] hover:opacity-90 text-white w-full py-3 rounded-lg text-lg shadow-lg transition"
+            className="mt-6 bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] hover:opacity-90 text-white w-full py-3 rounded-lg text-lg shadow-lg transition cursor-pointer"
             onClick={handleConfirmAndPay}
           >
             Confirm & Pay via M-Pesa
