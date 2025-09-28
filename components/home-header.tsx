@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const rotatingHeadings = [
-  "COLLTECH – Shop Tech Gadgets & Office Supplies in Kenya",
-  "Discover Quality Phone & Computer Accessories",
+  "COLLTECH – Tech Gadgets & Office Supplies",
+  "Quality Phone & Computer Accessories",
   "Affordable Stationery & Office Essentials",
   "Smart Electronics for Home & Office"
 ];

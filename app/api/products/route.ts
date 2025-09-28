@@ -2,11 +2,27 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/common/lib/db";
 import slugify from "slugify";
 
+// 🟢 GET all products
+export async function GET(req: NextRequest) {
+  try {
+    const products = await db.product.findMany({
+      orderBy: { createdAt: "desc" }, // optional sorting
+    });
+
+    return NextResponse.json({ success: true, data: products });
+  } catch (error: any) {
+    console.error("🔥 Error fetching products:", error.message);
+    return NextResponse.json(
+      { success: false, message: "Failed to fetch products", error: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+// 🔵 POST create product (your existing code)
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    console.log("📥 Incoming product data:", body);
-
     const {
       productName,
       brandName,
@@ -39,10 +55,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ✅ Generate unique slug
+    // slugify
     const baseSlug = slugify(productName, { lower: true, strict: true });
     let slug = baseSlug;
-
     let existing = await db.product.findUnique({ where: { slug } });
     let counter = 1;
     while (existing) {
@@ -50,8 +65,6 @@ export async function POST(req: NextRequest) {
       existing = await db.product.findUnique({ where: { slug } });
       counter++;
     }
-
-    console.log("📝 Final slug:", slug);
 
     const newProduct = await db.product.create({
       data: {
@@ -67,11 +80,9 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    console.log("✅ Product created:", newProduct);
-
     return NextResponse.json({ success: true, data: newProduct });
   } catch (error: any) {
-    console.error("🔥 Error creating product:", error.message, error.stack);
+    console.error("🔥 Error creating product:", error.message);
     return NextResponse.json(
       { success: false, message: "Failed to create product", error: error.message },
       { status: 500 }
