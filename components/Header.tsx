@@ -1,7 +1,7 @@
 'use client';
 import React, { useContext, useState } from 'react';
 import { GrSearch } from "react-icons/gr";
-import { FaRegCircleUser } from "react-icons/fa6";
+import { FaPencil, FaRegCircleUser } from "react-icons/fa6";
 import { FaShoppingCart } from "react-icons/fa";
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,6 +11,20 @@ import ROLE from '../common/role';
 import Context from '../context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Logo } from './Logo';
+
+// ✅ Cloudinary Upload
+const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dqtmsllzn/image/upload";
+const UPLOAD_PRESET = "coltec";
+
+const uploadImage = async (image: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append("file", image);
+  formData.append("upload_preset", UPLOAD_PRESET);
+
+  const res = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
+  const data = await res.json();
+  return data.secure_url;
+};
 
 const Header = () => {
   interface RootState {
@@ -23,9 +37,11 @@ const Header = () => {
       } | null;
     };
   }
+
   const user = useSelector((state: RootState) => state.user.user);
   const dispatch = useDispatch();
   const [menuDisplay, setMenuDisplay] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const context = useContext(Context);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -34,11 +50,11 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      const fetchData = await fetch("/api/auth/logout", {
+      const res = await fetch("/api/auth/logout", {
         method: "POST",
         credentials: "include",
       });
-      const data = await fetchData.json();
+      const data = await res.json();
 
       if (data.success) {
         toast.success(data.message);
@@ -60,6 +76,37 @@ const Header = () => {
       router.push(`/search-product?q=${value}`);
     } else {
       router.push('/search-product');
+    }
+  };
+
+  // ✅ Handle avatar upload
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.length || !user?.id) return;
+    const file = e.target.files[0];
+    setUploading(true);
+
+    try {
+      const url = await uploadImage(file);
+
+      // Save updated avatar in DB
+      const res = await fetch(`/api/users/${user.id}/avatar`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profilePic: url }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        dispatch(setUserDetails({ ...user, profilePic: url }));
+        toast.success("Profile picture updated!");
+      } else {
+        toast.error("Failed to update avatar");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error uploading avatar");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -86,7 +133,7 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Right Section: Dashboard + Cart + User + Auth */}
+        {/* Right Section */}
         <div className='flex items-center gap-5'>
           {user?.id && (
             <Link
@@ -108,16 +155,44 @@ const Header = () => {
             </Link>
           )}
 
+          {/* Avatar + Edit Icon */}
           <div className='relative flex justify-center'>
             {user?.id && (
-              <div className='text-3xl cursor-pointer relative flex justify-center' onClick={() => setMenuDisplay(prev => !prev)}>
+              <div className='relative'>
                 {user?.profilePic ? (
-                  <img src={user?.profilePic} className='w-10 h-10 rounded-full border-2 border-gray-300' alt={user?.name} />
+                  <img
+                    src={user?.profilePic}
+                    className='w-10 h-10 rounded-full border-2 border-gray-300 object-cover cursor-pointer'
+                    alt={user?.name}
+                    onClick={() => setMenuDisplay(prev => !prev)}
+                  />
                 ) : (
-                  <FaRegCircleUser className="text-gray-600 hover:text-[#7B2CBF] transition" />
+                  <FaRegCircleUser
+                    className="text-gray-600 hover:text-[#7B2CBF] transition text-3xl cursor-pointer"
+                    onClick={() => setMenuDisplay(prev => !prev)}
+                  />
+                )}
+
+                {/* Edit (camera) icon */}
+                <label className="absolute bottom-0 right-0 bg-white p-1 rounded-full border shadow cursor-pointer hover:bg-gray-100">
+                  <FaPencil className="text-gray-600 w-1 h-1" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={handleAvatarChange}
+                  />
+                </label>
+
+                {uploading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/70 rounded-full text-xs text-gray-600">
+                    ...
+                  </div>
                 )}
               </div>
             )}
+
+            {/* Dropdown menu */}
             {menuDisplay && (
               <div className="absolute bg-white top-11 right-0 h-fit p-2 shadow-lg rounded-md w-40 border border-gray-200">
                 <nav className="flex flex-col space-y-2">
@@ -125,7 +200,7 @@ const Header = () => {
                     <Link
                       href="/admin-panel"
                       className="block px-4 py-2 rounded text-gray-700 hover:bg-gradient-to-r hover:from-[#00C2D1] hover:to-[#7B2CBF] hover:text-white"
-                      onClick={() => setMenuDisplay(prev => !prev)}
+                      onClick={() => setMenuDisplay(false)}
                     >
                       Admin Panel
                     </Link>
@@ -135,6 +210,7 @@ const Header = () => {
             )}
           </div>
 
+          {/* Auth Button */}
           <div>
             {user?.id ? (
               <button 
@@ -153,7 +229,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Search Bar (Mobile only) */}
+      {/* Search Bar (Mobile) */}
       <div className='px-4 pb-3 lg:hidden'>
         <div className='flex items-center w-full border border-gray-300 rounded-full focus-within:shadow-md bg-gray-50 pl-3'>
           <input

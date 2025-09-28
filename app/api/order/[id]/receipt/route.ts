@@ -84,7 +84,6 @@ export async function GET(
       page.drawText(`KES ${item.product.price}`, { x: tableX + colWidths[0] + colWidths[1] + 10, y: y - 15, size: 11, font });
       y -= rowHeight;
     });
-
     // --- Total Section ---
     y -= 15;
     page.drawRectangle({

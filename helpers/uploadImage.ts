@@ -1,6 +1,6 @@
-const url = "https://api.cloudinary.com/v1_1/dba4cn3mn/image/upload";
+const url = "https://api.cloudinary.com/v1_1/dqtmsllzn/image/upload";
 
-const uploadImage = async (image: File) => {
+const uploadImage = async (image: File): Promise<string> => {
   const formData = new FormData();
   formData.append("file", image);
   formData.append("upload_preset", "coltec");
@@ -11,7 +11,7 @@ const uploadImage = async (image: File) => {
   });
 
   const data = await dataResponse.json();
-  return data.secure_url; // ✅ return only the URL
+  return data.secure_url; // ✅ always return plain string URL
 };
 
 export default uploadImage;

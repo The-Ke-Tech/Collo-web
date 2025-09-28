@@ -11,6 +11,7 @@ import AllProducts from './all-products/page';
 import Orders from './orders/page';
 import Revenue from './revenue/page';
 import Dashboard from './dashboard/page';
+import Banners from './banners/page';
 
 interface AdminPanelProps {
   user: {
@@ -30,6 +31,7 @@ const AdminPanel = ({ user }: AdminPanelProps) => {
     { key: "all-products", label: "All Products" },
     { key: "orders", label: "Orders" },
     { key: "revenue", label: "Revenue" },
+    { key: "banners", label: "Banners" },
   ];
 
   const renderSection = () => {
@@ -39,6 +41,7 @@ const AdminPanel = ({ user }: AdminPanelProps) => {
       case "all-products": return <AllProducts />;
       case "orders": return <Orders />;
       case "revenue": return <Revenue />;
+      case "banners": return <Banners />;
       default: return <Dashboard />;
     }
   };

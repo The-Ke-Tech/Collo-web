@@ -5,6 +5,8 @@ import VerticalCardProduct from '@/components/VerticalCardProduct'
 import React from 'react'
 import { Metadata } from 'next'
 import AnimatedHeading from '@/components/home-header'
+import BannerPage from '@/components/banner'
+import ClientBanners from '@/components/client-banners'
 
 export const metadata: Metadata = {
   title: 'COLLTECH - Tech Gadgets & Office Supplies in Kenya',
@@ -119,7 +121,7 @@ export default function Page() {
 
       {/* Components */}
       <CategoryList />
-      <BannerProduct />
+      <ClientBanners />
 
       <section>
         <h2 className="text-2xl font-semibold text-white mt-10 mb-4 text-center">

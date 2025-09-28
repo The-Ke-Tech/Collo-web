@@ -27,7 +27,10 @@ const CategoryList = () => {
         setCategoryProduct(dataResponse.data);
       } else {
         setCategoryProduct([]);
-        console.error("Invalid category product response structure:", dataResponse);
+        console.error(
+          'Invalid category product response structure:',
+          dataResponse
+        );
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -44,22 +47,31 @@ const CategoryList = () => {
   return (
     <div className="bg-white py-6 px-4 rounded-lg shadow-md border border-gray-200">
       <h2 className="text-xl font-bold text-gray-800 mb-4">Shop by Category</h2>
-      <div className="flex items-center gap-6 justify-start overflow-x-auto scrollbar-none">
+
+      <div
+        className={`
+          grid grid-flow-col auto-cols-[minmax(5rem,1fr)] gap-6
+          overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100
+          ${categoryProduct.length <= 4 ? 'justify-evenly' : ''}
+        `}
+      >
         {loading ? (
           categoryLoading.map((_, index) => (
             <div
-              className="h-16 w-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-gray-200 animate-pulse"
+              className="h-16 w-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-gray-200 animate-pulse flex-shrink-0"
               key={'categoryLoading' + index}
             />
           ))
         ) : Array.isArray(categoryProduct) && categoryProduct.length > 0 ? (
           categoryProduct.map((product) => (
             <Link
-              href={`/category-product?category=${encodeURIComponent(product.category)}`}
-              className="cursor-pointer text-center group"
+              href={`/category-product?category=${encodeURIComponent(
+                product.category
+              )}`}
+              className="cursor-pointer text-center group flex-shrink-0"
               key={product.category}
             >
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden p-3 bg-gray-50 flex items-center justify-center shadow-sm border border-gray-300 group-hover:border-transparent group-hover:shadow-lg group-hover:bg-gradient-to-r group-hover:from-[#00C2D1] group-hover:to-[#7B2CBF] transition">
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden p-3 bg-gray-50 flex items-center justify-center shadow-sm border border-gray-300 group-hover:border-transparent group-hover:shadow-lg group-hover:bg-gradient-to-r group-hover:from-[#00C2D1] group-hover:to-[#7B2CBF] transition mx-auto">
                 <img
                   src={product.productImage?.[0] || '/placeholder.png'}
                   alt={product.category}
@@ -72,7 +84,9 @@ const CategoryList = () => {
             </Link>
           ))
         ) : (
-          <p className="text-gray-500 italic">No categories found.</p>
+          <p className="text-gray-500 italic text-center w-full">
+            No categories found.
+          </p>
         )}
       </div>
     </div>

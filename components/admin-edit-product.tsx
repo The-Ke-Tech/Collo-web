@@ -48,9 +48,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
     setData((prev) => ({
       ...prev,
       [name]:
-        name === "price" ||
-        name === "sellingPrice" ||
-        name === "stock"
+        name === "price" || name === "sellingPrice" || name === "stock"
           ? Number(value)
           : value,
     }));
@@ -62,22 +60,33 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
     const files = e.target.files;
     if (!files || files.length === 0) return;
     const file = files[0];
-    const uploadImageCloudinary = await uploadImage(file);
+    const uploadedUrl = await uploadImage(file);
 
     setData((prev) => ({
       ...prev,
-      productImage: [...prev.productImage, uploadImageCloudinary.url],
+      productImage: [...prev.productImage, uploadedUrl],
     }));
   };
 
   const handleDeleteProductImage = (index: number) => {
-    const newProductImage = [...data.productImage];
-    newProductImage.splice(index, 1);
-    setData((prev) => ({ ...prev, productImage: [...newProductImage] }));
+    setData((prev) => ({
+      ...prev,
+      productImage: prev.productImage.filter((_, i) => i !== index),
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!data.productImage.length) {
+      toast.error("Please upload at least one product image.");
+      return;
+    }
+
+    if (data.sellingPrice > data.price) {
+      toast.error("Selling price cannot be greater than actual price.");
+      return;
+    }
 
     try {
       const response = await fetch(`/api/products/${productData.id}`, {

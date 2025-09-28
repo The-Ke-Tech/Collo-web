@@ -41,9 +41,7 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
   const [fullScreenImage, setFullScreenImage] = useState("");
 
   const handleOnChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
@@ -74,18 +72,21 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
     e.preventDefault();
 
     try {
+      console.log("Submitting product:", data);
+
       const response = await fetch("/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
-          price: parseFloat(data.price),
-          sellingPrice: parseFloat(data.sellingPrice),
-          stock: parseInt(data.stock, 10),
+          price: Number(data.price),
+          sellingPrice: Number(data.sellingPrice),
+          stock: Number(data.stock),
         }),
       });
 
       const responseData = await response.json();
+      console.log("Server response:", responseData);
 
       if (response.ok && responseData.success) {
         toast.success("Product uploaded successfully!");
@@ -115,17 +116,14 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
         </div>
 
         {/* Form */}
-        <form
-          className="grid gap-3 p-4 overflow-y-scroll h-full pb-6"
-          onSubmit={handleSubmit}
-        >
+        <form className="grid gap-3 p-4 overflow-y-scroll h-full pb-6" onSubmit={handleSubmit}>
           <label className="text-white font-medium">Product Name:</label>
           <input
             type="text"
             name="productName"
             value={data.productName}
             onChange={handleOnChange}
-            className="p-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-300 focus:border-[#7B2CBF] focus:ring focus:ring-[#7B2CBF]/40"
+            className="p-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-300"
             required
           />
 
@@ -135,7 +133,7 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
             name="brandName"
             value={data.brandName}
             onChange={handleOnChange}
-            className="p-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-300 focus:border-[#7B2CBF] focus:ring focus:ring-[#7B2CBF]/40"
+            className="p-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-300"
             required
           />
 
@@ -144,7 +142,7 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
             name="category"
             value={data.category}
             onChange={handleOnChange}
-            className="p-2 bg-white/10 border border-white/20 rounded text-black focus:border-[#7B2CBF] focus:ring focus:ring-[#7B2CBF]/40"
+            className="p-2 bg-white/10 border border-white/20 rounded text-black"
             required
           >
             <option value="">Select Category</option>
@@ -157,7 +155,7 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
 
           <label className="text-white font-medium">Product Image:</label>
           <label htmlFor="uploadImageInput">
-            <div className="p-2 bg-white/10 border border-white/20 rounded h-32 flex justify-center items-center cursor-pointer hover:border-[#00C2D1] transition">
+            <div className="p-2 bg-white/10 border border-white/20 rounded h-32 flex justify-center items-center cursor-pointer">
               <div className="text-[#00C2D1] flex flex-col items-center gap-2">
                 <FaCloudUploadAlt className="text-4xl" />
                 <p className="text-sm">Upload Product Image</p>
@@ -172,7 +170,7 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
             </div>
           </label>
 
-          {data.productImage.length > 0 ? (
+          {data.productImage.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {data.productImage.map((img, i) => (
                 <div key={i} className="relative group w-fit">
@@ -194,10 +192,6 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
                 </div>
               ))}
             </div>
-          ) : (
-            <p className="text-gray-200 text-xs">
-              *Please upload at least one image
-            </p>
           )}
 
           <label className="text-white font-medium">Price:</label>
@@ -206,7 +200,9 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
             name="price"
             value={data.price}
             onChange={handleOnChange}
-            className="p-2 bg-white/10 border border-white/20 rounded text-white focus:border-[#7B2CBF] focus:ring focus:ring-[#7B2CBF]/40"
+            min={0}
+            step="0.01"
+            className="p-2 bg-white/10 border border-white/20 rounded text-white"
             required
           />
 
@@ -216,7 +212,9 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
             name="sellingPrice"
             value={data.sellingPrice}
             onChange={handleOnChange}
-            className="p-2 bg-white/10 border border-white/20 rounded text-white focus:border-[#7B2CBF] focus:ring focus:ring-[#7B2CBF]/40"
+            min={0}
+            step="0.01"
+            className="p-2 bg-white/10 border border-white/20 rounded text-white"
             required
           />
 
@@ -227,7 +225,7 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
             value={data.stock}
             onChange={handleOnChange}
             min={0}
-            className="p-2 bg-white/10 border border-white/20 rounded text-white focus:border-[#7B2CBF] focus:ring focus:ring-[#7B2CBF]/40"
+            className="p-2 bg-white/10 border border-white/20 rounded text-white"
             required
           />
 
@@ -236,7 +234,7 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
             name="description"
             value={data.description}
             onChange={handleOnChange}
-            className="h-28 bg-white/10 border border-white/20 resize-none p-2 rounded text-white focus:border-[#7B2CBF] focus:ring focus:ring-[#7B2CBF]/40"
+            className="h-28 bg-white/10 border border-white/20 resize-none p-2 rounded text-white"
             placeholder="Enter product description"
             required
           />
@@ -248,10 +246,7 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
       </div>
 
       {openFullScreenImage && (
-        <DisplayImage
-          imgUrl={fullScreenImage}
-          onClose={() => setOpenFullScreenImage(false)}
-        />
+        <DisplayImage imgUrl={fullScreenImage} onClose={() => setOpenFullScreenImage(false)} />
       )}
     </div>
   );

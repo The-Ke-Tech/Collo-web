@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/common/lib/db";
 import slugify from "slugify";
 
-// Create product
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    console.log("📥 Incoming product data:", body);
+
     const {
       productName,
       brandName,
@@ -17,14 +18,40 @@ export async function POST(req: NextRequest) {
       stock,
     } = body;
 
-    if (!productName || !category || !sellingPrice || stock === undefined) {
+    if (!productName || !category) {
       return NextResponse.json(
-        { success: false, message: "Required fields missing" },
+        { success: false, message: "Product name and category are required" },
         { status: 400 }
       );
     }
 
-    const slug = slugify(productName, { lower: true, strict: true });
+    const parsedPrice = Number(price);
+    const parsedSellingPrice = Number(sellingPrice);
+    const parsedStock = Number(stock);
+
+    if (isNaN(parsedPrice) || isNaN(parsedSellingPrice) || isNaN(parsedStock)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Price, Selling Price, and Stock must be valid numbers",
+        },
+        { status: 400 }
+      );
+    }
+
+    // ✅ Generate unique slug
+    const baseSlug = slugify(productName, { lower: true, strict: true });
+    let slug = baseSlug;
+
+    let existing = await db.product.findUnique({ where: { slug } });
+    let counter = 1;
+    while (existing) {
+      slug = `${baseSlug}-${counter}`;
+      existing = await db.product.findUnique({ where: { slug } });
+      counter++;
+    }
+
+    console.log("📝 Final slug:", slug);
 
     const newProduct = await db.product.create({
       data: {
@@ -34,33 +61,19 @@ export async function POST(req: NextRequest) {
         category,
         productImage: productImage || [],
         description,
-        price,
-        sellingPrice,
-        stock: parseInt(stock, 10) || 0,
+        price: parsedPrice,
+        sellingPrice: parsedSellingPrice,
+        stock: parsedStock,
       },
     });
 
-    return NextResponse.json({ success: true, data: newProduct });
-  } catch (error) {
-    console.error("Error creating product:", error);
-    return NextResponse.json(
-      { success: false, message: "Failed to create product" },
-      { status: 500 }
-    );
-  }
-}
+    console.log("✅ Product created:", newProduct);
 
-// Get all products
-export async function GET() {
-  try {
-    const products = await db.product.findMany({
-      orderBy: { createdAt: "desc" },
-    });
-    return NextResponse.json({ success: true, data: products });
-  } catch (error) {
-    console.error("Error fetching products:", error);
+    return NextResponse.json({ success: true, data: newProduct });
+  } catch (error: any) {
+    console.error("🔥 Error creating product:", error.message, error.stack);
     return NextResponse.json(
-      { success: false, message: "Failed to fetch products" },
+      { success: false, message: "Failed to create product", error: error.message },
       { status: 500 }
     );
   }

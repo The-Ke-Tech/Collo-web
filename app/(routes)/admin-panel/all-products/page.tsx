@@ -2,11 +2,12 @@
 
 import AdminProductCard from "@/components/admin-product-card";
 import UploadProduct from "@/components/upload-product";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
 const AllProducts = () => {
   const [openUploadProduct, setOpenUploadProduct] = useState(false);
-  const [allProduct, setAllProduct] = useState([]);
+  const [allProduct, setAllProduct] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
   const fetchAllProduct = async () => {
     try {
@@ -24,6 +25,18 @@ const AllProducts = () => {
     fetchAllProduct();
   }, []);
 
+  // 🔹 Extract unique categories
+  const categories = useMemo(() => {
+    const unique = new Set(allProduct.map((p) => p.category));
+    return ["All", ...Array.from(unique)];
+  }, [allProduct]);
+
+  // 🔹 Filter products
+  const filteredProducts = useMemo(() => {
+    if (selectedCategory === "All") return allProduct;
+    return allProduct.filter((p) => p.category === selectedCategory);
+  }, [selectedCategory, allProduct]);
+
   return (
     <div className="bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-300 min-h-screen p-4">
       {/* Header */}
@@ -37,15 +50,38 @@ const AllProducts = () => {
         </button>
       </div>
 
-      {/* All products grid */}
-      <div className="flex items-center flex-wrap gap-5 py-6 h-[calc(100vh-200px)] overflow-y-auto">
-        {allProduct.map((product, index) => (
-          <AdminProductCard
-            data={product}
-            key={index + "allProduct"}
-            fetchdata={fetchAllProduct}
-          />
-        ))}
+      {/* 🔹 Category Filter */}
+      <div className="flex items-center gap-3 mt-4">
+        <label htmlFor="categoryFilter" className="text-sm text-gray-400">
+          Filter by category:
+        </label>
+        <select
+          id="categoryFilter"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="bg-gray-800 border border-gray-700 rounded px-3 py-1 text-white focus:ring-2 focus:ring-blue-500"
+        >
+          {categories.map((cat, idx) => (
+            <option key={idx} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Products grid */}
+      <div className="flex items-start flex-wrap gap-5 py-6 h-[calc(100vh-240px)] overflow-y-auto">
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((product, index) => (
+            <AdminProductCard
+              data={product}
+              key={index + "filteredProduct"}
+              fetchdata={fetchAllProduct}
+            />
+          ))
+        ) : (
+          <p className="text-gray-400 italic">No products in this category.</p>
+        )}
       </div>
 
       {/* Upload product modal */}
