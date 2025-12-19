@@ -1,5 +1,9 @@
+// app/sitemap.xml/route.ts
 import { NextResponse } from "next/server";
 import slugify from "slugify";
+
+// Force this route to always be server-rendered
+export const dynamic = "force-dynamic";
 
 const BACKEND_URL = "https://colltechhubserver.vercel.app";
 const BASE_URL = "https://www.colltechhub.com";
@@ -25,11 +29,11 @@ interface CategoryItem {
   category: string;
 }
 
-/* -------------------- HELPERS -------------------- */
+/* -------------------- FETCH HELPER -------------------- */
 const fetchJSON = async <T,>(url: string): Promise<T | null> => {
   try {
     const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed: ${url}`);
+    if (!res.ok) throw new Error(`Failed to fetch: ${url}`);
     const json = await res.json();
     return json.data ?? json;
   } catch (err) {
@@ -38,32 +42,21 @@ const fetchJSON = async <T,>(url: string): Promise<T | null> => {
   }
 };
 
-/* -------------------- SITEMAP -------------------- */
+/* -------------------- SITEMAP GENERATOR -------------------- */
 export async function GET() {
-  const [
-    products,
-    services,
-    productCategories,
-    serviceCategories,
-  ] = await Promise.all([
+  // Fetch all data concurrently
+  const [products, services, productCategories, serviceCategories] = await Promise.all([
     fetchJSON<Product[]>(`${BACKEND_URL}/api/products`),
     fetchJSON<Service[]>(`${BACKEND_URL}/api/services`),
     fetchJSON<CategoryItem[]>(`${BACKEND_URL}/api/category-product`),
     fetchJSON<CategoryItem[]>(`${BACKEND_URL}/api/category-service`),
   ]);
 
-  /* ---------- STATIC PAGES ---------- */
-  const staticPages = [
-    "",
-    "faq",
-    "support",
-    "contact",
-    "returns",
-    "about-us",
-    "blog",
-  ];
+  const urls: string[] = [];
 
-  const urls: string[] = [
+  /* ---------- STATIC PAGES ---------- */
+  const staticPages = ["", "faq", "support", "contact", "returns", "about-us", "blog"];
+  urls.push(
     ...staticPages.map(
       (page) => `
       <url>
@@ -72,8 +65,8 @@ export async function GET() {
         <changefreq>monthly</changefreq>
         <priority>${page === "" ? "1.0" : "0.8"}</priority>
       </url>`
-    ),
-  ];
+    )
+  );
 
   /* ---------- PRODUCT CATEGORIES ---------- */
   if (productCategories) {
