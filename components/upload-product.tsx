@@ -2,17 +2,20 @@
 
 import React, { useState } from "react";
 import { CgClose } from "react-icons/cg";
-import productCategory from "../helpers/productCategory";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import uploadImage from "../helpers/uploadImage";
 import { MdDelete } from "react-icons/md";
 import { toast } from "react-toastify";
+import productCategory from "../helpers/productCategory";
 import DisplayImage from "./display-image";
+import { useAuthStore } from "@/store/auth-store";
+import uploadImage from "../helpers/uploadImage";
 
 interface UploadProductProps {
   onClose: () => void;
   fetchData: () => void;
 }
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => {
   interface ProductData {
@@ -37,8 +40,11 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
     stock: "",
   });
 
+  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
   const [openFullScreenImage, setOpenFullScreenImage] = useState(false);
   const [fullScreenImage, setFullScreenImage] = useState("");
+
+  const { user, fetchWithAuth, isAdmin } = useAuthStore();
 
   const handleOnChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -48,17 +54,36 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
   };
 
   const handleUploadProduct = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
     try {
-      const imageUrl = await uploadImage(file);
+      // Parallel uploads with progress tracking
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const key = `${file.name}-${Date.now()}`;
+        setUploadProgress((prev) => ({ ...prev, [key]: 0 }));
+
+        const url = await uploadImage(file, (progress: number) => {
+          setUploadProgress((prev) => ({ ...prev, [key]: progress }));
+        });
+
+        setUploadProgress((prev) => {
+          const newProgress = { ...prev };
+          delete newProgress[key];
+          return newProgress;
+        });
+
+        return url;
+      });
+
+      const uploadedUrls = await Promise.all(uploadPromises);
+
       setData((prev) => ({
         ...prev,
-        productImage: [...prev.productImage, imageUrl],
+        productImage: [...prev.productImage, ...uploadedUrls],
       }));
-    } catch (error) {
-      toast.error("Failed to upload image");
+    } catch (err) {
+      toast.error("Failed to upload one or more images");
     }
   };
 
@@ -71,22 +96,32 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      console.log("Submitting product:", data);
+    if (!user) {
+      toast.error("You must be logged in to upload a product");
+      return;
+    }
 
-      const response = await fetch("/api/products", {
+    if (!isAdmin()) {
+      toast.error("Only admin users can upload products");
+      return;
+    }
+
+    try {
+      const payload = {
+        ...data,
+        price: Number(data.price),
+        sellingPrice: Number(data.sellingPrice),
+        stock: Number(data.stock),
+        createdBy: user.id,
+      };
+
+      const response = await fetchWithAuth(`${API_URL}/api/products`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          price: Number(data.price),
-          sellingPrice: Number(data.sellingPrice),
-          stock: Number(data.stock),
-        }),
+        body: JSON.stringify(payload),
       });
 
       const responseData = await response.json();
-      console.log("Server response:", responseData);
 
       if (response.ok && responseData.success) {
         toast.success("Product uploaded successfully!");
@@ -95,8 +130,8 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
       } else {
         toast.error(responseData.message || "Failed to upload product");
       }
-    } catch (error) {
-      console.error("Error uploading product:", error);
+    } catch (err) {
+      console.error("Product upload error:", err);
       toast.error("Something went wrong while uploading product");
     }
   };
@@ -117,6 +152,7 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
 
         {/* Form */}
         <form className="grid gap-3 p-4 overflow-y-scroll h-full pb-6" onSubmit={handleSubmit}>
+          {/* Product Info */}
           <label className="text-white font-medium">Product Name:</label>
           <input
             type="text"
@@ -153,47 +189,63 @@ const UploadProduct: React.FC<UploadProductProps> = ({ onClose, fetchData }) => 
             ))}
           </select>
 
-          <label className="text-white font-medium">Product Image:</label>
+          {/* Image Upload */}
+          <label className="text-white font-medium">Product Images:</label>
           <label htmlFor="uploadImageInput">
             <div className="p-2 bg-white/10 border border-white/20 rounded h-32 flex justify-center items-center cursor-pointer">
               <div className="text-[#00C2D1] flex flex-col items-center gap-2">
                 <FaCloudUploadAlt className="text-4xl" />
-                <p className="text-sm">Upload Product Image</p>
+                <p className="text-sm">Upload Product Images</p>
                 <input
                   type="file"
                   id="uploadImageInput"
                   className="hidden"
                   onChange={handleUploadProduct}
                   accept="image/*"
+                  multiple
                 />
               </div>
             </div>
           </label>
 
-          {data.productImage.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {data.productImage.map((img, i) => (
-                <div key={i} className="relative group w-fit">
-                  <img
-                    src={img}
-                    alt="Uploaded"
-                    className="w-20 h-20 object-cover border border-white/20 rounded cursor-pointer"
-                    onClick={() => {
-                      setFullScreenImage(img);
-                      setOpenFullScreenImage(true);
-                    }}
-                  />
-                  <div
-                    onClick={() => handleDeleteProductImage(i)}
-                    className="absolute top-0 right-0 bg-red-600 text-white p-1 rounded-full hidden group-hover:block cursor-pointer"
-                  >
-                    <MdDelete />
-                  </div>
+          {/* Display Uploaded Images */}
+          <div className="flex flex-wrap gap-2">
+            {data.productImage.map((img, i) => (
+              <div key={i} className="relative group w-fit">
+                <img
+                  src={img}
+                  alt="Uploaded"
+                  className="w-20 h-20 object-cover border border-white/20 rounded cursor-pointer"
+                  onClick={() => {
+                    setFullScreenImage(img);
+                    setOpenFullScreenImage(true);
+                  }}
+                />
+                <div
+                  onClick={() => handleDeleteProductImage(i)}
+                  className="absolute top-0 right-0 bg-red-600 text-white p-1 rounded-full hidden group-hover:block cursor-pointer"
+                >
+                  <MdDelete />
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
 
+            {/* Show upload progress for ongoing files */}
+            {Object.keys(uploadProgress).map((key) => (
+              <div
+                key={key}
+                className="relative w-20 h-20 border border-white/20 rounded bg-white/20 flex items-center justify-center"
+              >
+                <div className="text-xs text-white">Uploading...</div>
+                <div
+                  className="absolute bottom-0 left-0 h-1 bg-green-500"
+                  style={{ width: `${uploadProgress[key]}%` }}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Price & Stock */}
           <label className="text-white font-medium">Price:</label>
           <input
             type="number"

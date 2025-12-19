@@ -38,6 +38,12 @@ const Footer = () => {
               >
                 Blog
               </Link>
+              <Link
+                href="/privacy-policy"
+                className="text-sm text-white font-semibold hover:underline hover:text-gray-200 transition"
+              >
+                Privacy Policy
+              </Link>
             </div>
           </div>
 

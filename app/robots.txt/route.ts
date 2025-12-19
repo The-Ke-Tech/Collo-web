@@ -2,19 +2,17 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const content = `
-User-agent: *
+  const content = `User-agent: *
 Allow: /
-Disallow: /admin-panel
+
+Disallow: /admin/admin-panel
 Disallow: /customer-dashboard
 
-# Sitemap
-Sitemap: ${process.env.NEXT_PUBLIC_BASE_URL}/sitemap.xml
-  `.trim();
+Sitemap: https://www.colltechhub.com/sitemap.xml`;
 
   return new NextResponse(content, {
     headers: {
-      "Content-Type": "text/plain",
+      "Content-Type": "text/plain; charset=utf-8",
     },
   });
 }

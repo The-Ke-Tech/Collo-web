@@ -4,18 +4,24 @@ import displayKESCurrency from "@/helpers/displayCurrency";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { useAuthStore } from "@/store/auth-store";
 
 // Product type
 interface Product {
-  id: string;
+  _id: string;
   productName: string;
   sellingPrice: number;
 }
 
 // Cart item type
 interface CartItem {
-  productId: Product;
+  productId: string;
   quantity: number;
+  product: {
+    _id: string;
+    productName: string;
+    sellingPrice: number;
+  };
 }
 
 // Shipping info type
@@ -41,12 +47,12 @@ interface CheckoutPayload {
   productDetails: { productId: string; quantity: number }[];
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const CheckoutPage = () => {
   const searchParams = useSearchParams();
   const itemsParam = searchParams.get("items");
   const [items, setItems] = useState<CartItem[]>([]);
-  const [userId, setUserId] = useState<string | null>(null);
-
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
     fullName: "",
     phone: "",
@@ -54,20 +60,27 @@ const CheckoutPage = () => {
     county: "",
     city: "",
   });
+  const [loadingPayment, setLoadingPayment] = useState(false);
+
+  const { user, isLoggedIn } = useAuthStore();
+  const router = useRouter();
 
   useEffect(() => {
-    const getUserId = async () => {
-      try {
-        const res = await fetch("/api/users/me");
-        const data = await res.json();
-        setUserId(data?.id || null);
-      } catch (err) {
-        console.error("Failed to get user ID", err);
-        toast.error("Failed to get user info");
-      }
-    };
-    getUserId();
-  }, []);
+    if (!isLoggedIn()) {
+      const currentPath = window.location.pathname + window.location.search;
+      router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+    }
+  }, [isLoggedIn, router]);
+
+  useEffect(() => {
+  if (user) {
+    setShippingInfo((prev) => ({
+      ...prev,
+      fullName: user.name ?? "",
+      phone: user.phone ?? "",
+    }));
+  }
+}, [user]);
 
   useEffect(() => {
     if (itemsParam) {
@@ -76,12 +89,13 @@ const CheckoutPage = () => {
         setItems(parsed);
       } catch (error) {
         console.error("Failed to parse cart items", error);
+        toast.error("Failed to load cart items.");
       }
     }
   }, [itemsParam]);
 
   const totalPrice = items.reduce(
-    (sum, curr) => sum + curr.quantity * curr.productId.sellingPrice,
+    (sum, curr) => sum + curr.quantity * curr.product.sellingPrice,
     0
   );
 
@@ -94,56 +108,108 @@ const CheckoutPage = () => {
     });
   };
 
-  const router = useRouter();
-  const handleConfirmAndPay = async () => {
-    if (!userId) {
-      toast.error("User not authenticated. Please login.");
-      return;
-    }
+ const handleConfirmAndPay = async () => {
+  if (!user) {
+    toast.error("User not authenticated. Please login.");
+    return;
+  }
 
-    const payload: CheckoutPayload = {
-      userId,
-      phoneNumber: shippingInfo.phone,
-      amount: totalPrice,
-      accountReference: `Order-${Date.now()}`,
-      description: "Coltech Business Product(s)",
-      fullName: shippingInfo.fullName,
-      address: shippingInfo.address,
-      county: shippingInfo.county,
-      city: shippingInfo.city,
-      productDetails: items.map((item) => ({
-        productId: item.productId.id,
-        quantity: item.quantity,
-      })),
-    };
+  if (!shippingInfo.phone || !shippingInfo.address || !shippingInfo.city) {
+    toast.error("Please complete shipping information");
+    return;
+  }
 
-    try {
-      const res = await fetch("/api/checkout", {
+  if (!items.length) {
+    toast.error("Cart is empty");
+    return;
+  }
+
+  const payload: CheckoutPayload = {
+    userId: user.id,
+    phoneNumber: shippingInfo.phone,
+    amount: totalPrice,
+    accountReference: `Order-${Date.now()}`,
+    description: "Coltech Business Product(s)",
+    fullName: shippingInfo.fullName,
+    address: shippingInfo.address,
+    county: shippingInfo.county,
+    city: shippingInfo.city,
+    productDetails: items.map((item) => ({
+      productId: item.product._id,
+      quantity: item.quantity,
+    })),
+  };
+
+  try {
+    setLoadingPayment(true);
+
+    const res = await useAuthStore
+      .getState()
+      .fetchWithAuth(`${API_URL}/api/checkout`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        toast.error(data?.error || "Failed to place order.");
-        return;
-      }
+    const data = await res.json();
 
-      toast.success("Order placed. Check your phone for M-Pesa STK push.");
-      if (data?.orderId) {
-        router.push(`/checkout/confirmation?orderId=${data.orderId}`);
-      } else {
-        toast.error("No order ID returned. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error placing order", error);
-      toast.error("Something went wrong. Please try again.");
+    if (!res.ok || !data?.success) {
+      console.error("Checkout failed:", data);
+      setLoadingPayment(false);
+      return toast.error(data?.error || "Checkout failed. Please try again.");
     }
-  };
+
+    toast.info("Waiting for payment confirmation...");
+
+    const checkoutRequestId = data.data.CheckoutRequestID;
+
+    // Timeout after 2 minutes
+    const timeout = setTimeout(() => {
+      setLoadingPayment(false);
+      toast.error("Payment failed (timeout). Please try again.");
+    }, 2 * 60 * 1000);
+
+    const interval = setInterval(async () => {
+      try {
+        const statusRes = await useAuthStore
+          .getState()
+          .fetchWithAuth(`${API_URL}/api/orders/status?checkoutRequestId=${checkoutRequestId}`);
+
+        const statusData = await statusRes.json();
+
+        if (statusData?.paymentStatus === "CONFIRMED") {
+          clearInterval(interval);
+          clearTimeout(timeout);
+          setLoadingPayment(false);
+          toast.success("Payment confirmed! Redirecting...");
+          router.push("/customer-dashboard");
+        } else if (statusData?.paymentStatus === "FAILED") {
+          clearInterval(interval);
+          clearTimeout(timeout);
+          setLoadingPayment(false);
+          toast.error("Payment failed. Please try again.");
+        }
+      } catch (err) {
+        console.error("Error checking payment status:", err);
+      }
+    }, 3000);
+  } catch (error) {
+    console.error("Error placing order:", error);
+    setLoadingPayment(false);
+    toast.error("Something went wrong. Please retry.");
+  }
+};
+
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 bg-gradient-to-b from-[#00C2D1] via-[#4B3F72] to-[#7B2CBF] text-white min-h-screen rounded-lg shadow-lg">
+    <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 bg-gradient-to-b from-[#00C2D1] via-[#4B3F72] to-[#7B2CBF] text-white min-h-screen rounded-lg shadow-lg">
+      {loadingPayment && (
+        <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="text-white text-lg font-semibold animate-pulse">
+            Processing payment, please wait...
+          </div>
+        </div>
+      )}
+
       <h2 className="text-3xl font-bold mb-6 text-center">Checkout</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -182,16 +248,13 @@ const CheckoutPage = () => {
             <h3 className="text-lg font-semibold mb-3">Order Summary</h3>
             <ul className="divide-y divide-white/20 text-sm">
               {items.map((item, idx) => (
-                <li
-                  key={idx}
-                  className="py-2 flex justify-between text-white/90"
-                >
+                <li key={idx} className="py-2 flex justify-between text-white/90">
                   <span>
-                    {item.productId.productName} × {item.quantity}
+                    {item.product?.productName} × {item.quantity}
                   </span>
                   <span>
                     {displayKESCurrency(
-                      item.quantity * item.productId.sellingPrice
+                      item.quantity * (item.product?.sellingPrice ?? 0)
                     )}
                   </span>
                 </li>
@@ -207,6 +270,7 @@ const CheckoutPage = () => {
           <button
             className="mt-6 bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] hover:opacity-90 text-white w-full py-3 rounded-lg text-lg shadow-lg transition cursor-pointer"
             onClick={handleConfirmAndPay}
+            disabled={loadingPayment}
           >
             Confirm & Pay via M-Pesa
           </button>

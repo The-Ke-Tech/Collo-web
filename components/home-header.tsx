@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const rotatingHeadings = [
-  "COLLTECH – Tech Gadgets & Office Supplies",
-  "Quality Phone & Computer Accessories",
-  "Affordable Stationery & Office Essentials",
-  "Smart Electronics for Home & Office"
+  "COLLTECH & Services",
+  "Phones • Computers • Office",
+  "Stationery & Electronics",
+  "Printing • Internet • Design"
 ];
 
 export default function AnimatedHeading() {
@@ -20,7 +20,7 @@ export default function AnimatedHeading() {
   }, []);
 
   return (
-    <div className="text-center my-8">
+    <div className="text-center my-3">
       <AnimatePresence mode="wait">
         <motion.h1
           key={index}

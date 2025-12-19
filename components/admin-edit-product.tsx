@@ -8,41 +8,36 @@ import uploadImage from "../helpers/uploadImage";
 import { MdDelete } from "react-icons/md";
 import { toast } from "react-toastify";
 import DisplayImage from "./display-image";
-
-interface ProductData {
-  id: string;
-  productName: string;
-  brandName: string;
-  category: string;
-  productImage: string[];
-  description: string;
-  price: number;
-  sellingPrice: number;
-  stock: number;
-}
+import { Product } from "@/helpers/product-types";
+import { useAuthStore } from "@/store/auth-store";
 
 interface AdminEditProductProps {
   onClose: () => void;
-  productData: ProductData;
+  productData: Product;
   fetchdata: () => void;
 }
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const AdminEditProduct: React.FC<AdminEditProductProps> = ({
   onClose,
   productData,
   fetchdata,
 }) => {
-  const [data, setData] = useState<ProductData>({
+  const [data, setData] = useState<Product>({
     ...productData,
-    productImage: productData?.productImage || [],
+    brandName: productData.brandName || "",
+    description: productData.description || "",
+    productImage: productData.productImage || [],
   });
+
   const [openFullScreenImage, setOpenFullScreenImage] = useState(false);
   const [fullScreenImage, setFullScreenImage] = useState("");
 
+  const { fetchWithAuth } = useAuthStore();
+
   const handleOnChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setData((prev) => ({
@@ -54,18 +49,27 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
     }));
   };
 
-  const handleUploadProduct = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleUploadProduct = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-    const file = files[0];
-    const uploadedUrl = await uploadImage(file);
 
-    setData((prev) => ({
-      ...prev,
-      productImage: [...prev.productImage, uploadedUrl],
-    }));
+    try {
+      // Upload multiple files in parallel with progress
+      const uploadedUrls = await Promise.all(
+        Array.from(files).map((file) =>
+          uploadImage(file, (progress) => {
+            console.log(`Upload progress for ${file.name}: ${progress}%`);
+          })
+        )
+      );
+
+      setData((prev) => ({
+        ...prev,
+        productImage: [...prev.productImage, ...uploadedUrls],
+      }));
+    } catch (err) {
+      toast.error("Failed to upload one or more images");
+    }
   };
 
   const handleDeleteProductImage = (index: number) => {
@@ -74,6 +78,16 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
       productImage: prev.productImage.filter((_, i) => i !== index),
     }));
   };
+
+  if (!data._id) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="bg-gray-900 text-red-400 p-6 rounded">
+          Product ID is missing. Cannot edit product.
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -89,7 +103,8 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
     }
 
     try {
-      const response = await fetch(`/api/products/${productData.id}`, {
+      // ✅ Use fetchWithAuth to include the token automatically
+      const response = await fetchWithAuth(`${API_URL}/api/products/${data._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -104,14 +119,14 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
       } else {
         toast.error(responseData.message || "Failed to update product");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating product:", error);
-      toast.error("Something went wrong while updating the product");
+      toast.error(error?.message || "Something went wrong while updating the product");
     }
   };
 
   return (
-    <div className="fixed w-full h-full bg-black bg-opacity-50 top-0 left-0 right-0 bottom-0 flex justify-center items-center">
+    <div className="fixed w-full h-full bg-black bg-opacity-50 top-0 left-0 mt-14 right-0 bottom-0 flex justify-center items-center">
       <div className="bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-200 p-4 rounded-lg w-full max-w-2xl h-full max-h-[80%] overflow-hidden shadow-lg">
         <div className="flex justify-between items-center pb-3 border-b border-gray-700">
           <h2 className="font-bold text-xl text-white">Edit Product</h2>
@@ -127,6 +142,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
           className="grid p-4 gap-3 overflow-y-scroll h-full pb-5"
           onSubmit={handleSubmit}
         >
+          {/* Product Name */}
           <label htmlFor="productName">Product Name :</label>
           <input
             type="text"
@@ -138,6 +154,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             required
           />
 
+          {/* Brand Name */}
           <label htmlFor="brandName" className="mt-3">
             Brand Name :
           </label>
@@ -148,9 +165,9 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             name="brandName"
             onChange={handleOnChange}
             className="p-2 bg-gray-800 border border-gray-700 rounded text-white"
-            required
           />
 
+          {/* Category */}
           <label htmlFor="category" className="mt-3">
             Category :
           </label>
@@ -162,13 +179,14 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             className="p-2 bg-gray-800 border border-gray-700 rounded text-white"
           >
             <option value={""}>Select Category</option>
-            {productCategory.map((el, index) => (
-              <option value={el.value} key={el.value + index}>
+            {productCategory.map((el) => (
+              <option value={el.value} key={el.value}>
                 {el.label}
               </option>
             ))}
           </select>
 
+          {/* Stock */}
           <label htmlFor="stock" className="mt-3">
             Stock :
           </label>
@@ -183,8 +201,9 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             min={0}
           />
 
+          {/* Product Images */}
           <label htmlFor="productImage" className="mt-3">
-            Product Image :
+            Product Images :
           </label>
           <label htmlFor="uploadImageInput">
             <div className="p-2 bg-gray-800 border border-gray-700 rounded h-32 w-full flex justify-center items-center cursor-pointer">
@@ -192,49 +211,44 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
                 <span className="text-4xl">
                   <FaCloudUploadAlt />
                 </span>
-                <p className="text-sm">Upload Product Image</p>
+                <p className="text-sm">Upload Product Images</p>
                 <input
                   type="file"
                   id="uploadImageInput"
                   className="hidden"
                   onChange={handleUploadProduct}
+                  multiple
                 />
               </div>
             </div>
           </label>
 
-          <div>
-            {data?.productImage[0] ? (
-              <div className="flex items-center gap-2">
-                {data.productImage.map((el, index) => (
-                  <div key={index} className="relative group">
-                    <img
-                      src={el}
-                      alt={el}
-                      width={80}
-                      height={80}
-                      className="bg-gray-800 border border-gray-700 cursor-pointer rounded"
-                      onClick={() => {
-                        setOpenFullScreenImage(true);
-                        setFullScreenImage(el);
-                      }}
-                    />
-                    <div
-                      className="absolute bottom-0 right-0 p-1 text-white bg-red-600 rounded-full hidden group-hover:block cursor-pointer"
-                      onClick={() => handleDeleteProductImage(index)}
-                    >
-                      <MdDelete />
-                    </div>
-                  </div>
-                ))}
+          {/* Display Images */}
+          <div className="flex items-center gap-2 mt-2">
+            {data.productImage.map((el, index) => (
+              <div key={index} className="relative group">
+                <img
+                  src={el}
+                  alt={el}
+                  width={80}
+                  height={80}
+                  className="bg-gray-800 border border-gray-700 cursor-pointer rounded"
+                  onClick={() => {
+                    setOpenFullScreenImage(true);
+                    setFullScreenImage(el);
+                  }}
+                />
+                <div
+                  className="absolute bottom-0 right-0 p-1 text-white bg-red-600 rounded-full hidden group-hover:block cursor-pointer"
+                  onClick={() => handleDeleteProductImage(index)}
+                >
+                  <MdDelete />
+                </div>
               </div>
-            ) : (
-              <p className="text-red-500 text-xs">
-                *Please upload product image
-              </p>
-            )}
+            ))}
           </div>
 
+          {/* Price */}
           <label htmlFor="price" className="mt-3">
             Price :
           </label>
@@ -248,6 +262,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             required
           />
 
+          {/* Selling Price */}
           <label htmlFor="sellingPrice" className="mt-3">
             Selling Price :
           </label>
@@ -261,6 +276,7 @@ const AdminEditProduct: React.FC<AdminEditProductProps> = ({
             required
           />
 
+          {/* Description */}
           <label htmlFor="description" className="mt-3">
             Description :
           </label>

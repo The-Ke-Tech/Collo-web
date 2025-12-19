@@ -1,248 +1,162 @@
 'use client';
-import React, { useContext, useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { GrSearch } from "react-icons/gr";
-import { FaPencil, FaRegCircleUser } from "react-icons/fa6";
+import { FaRegCircleUser } from "react-icons/fa6";
 import { FaShoppingCart } from "react-icons/fa";
 import Link from 'next/link';
-import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
-import { setUserDetails } from '../store/userSlice';
-import ROLE from '../common/role';
-import Context from '../context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Logo } from './Logo';
+import { useAuthStore } from '@/store/auth-store';
+import { useCartStore } from '@/store/cart-store';
 
-// ✅ Cloudinary Upload
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dqtmsllzn/image/upload";
-const UPLOAD_PRESET = "coltec";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const uploadImage = async (image: File): Promise<string> => {
-  const formData = new FormData();
-  formData.append("file", image);
-  formData.append("upload_preset", UPLOAD_PRESET);
-
-  const res = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
-  const data = await res.json();
-  return data.secure_url;
-};
+interface SearchItem {
+  _id: string;
+  name: string;
+  category?: string;
+  slug: string;
+  type: "product" | "service";
+}
 
 const Header = () => {
-  interface RootState {
-    user: {
-      user: {
-        id?: string;
-        name?: string;
-        profilePic?: string;
-        role?: string;
-      } | null;
-    };
-  }
-
-  const user = useSelector((state: RootState) => state.user.user);
-  const dispatch = useDispatch();
-  const [menuDisplay, setMenuDisplay] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const context = useContext(Context);
+  const { user, logout } = useAuthStore();
+  const { count: cartProductCount, fetchCart } = useCartStore();
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialSearch = searchParams?.get("q") || "";
   const [search, setSearch] = useState(initialSearch);
+  const [results, setResults] = useState<SearchItem[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogout = async () => {
+  useEffect(() => {
+    if (user?.id) fetchCart();
+  }, [user?.id, fetchCart]);
+
+  // Debounced search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (search.trim()) performSearch(search.trim());
+      else setResults([]);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  const performSearch = async (query: string) => {
+    setLoading(true);
     try {
-      const res = await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        toast.success(data.message);
-        dispatch(setUserDetails(null));
-        router.push('/');
-      } else {
-        toast.error(data.message || "Logout failed");
-      }
-    } catch (error: unknown) {
-      const err = error as { message?: string };
-      toast.error(err.message || 'An error occurred');
-    }
-  };
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-    if (value) {
-      router.push(`/search-product?q=${value}`);
-    } else {
-      router.push('/search-product');
-    }
-  };
-
-  // ✅ Handle avatar upload
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.length || !user?.id) return;
-    const file = e.target.files[0];
-    setUploading(true);
-
-    try {
-      const url = await uploadImage(file);
-
-      // Save updated avatar in DB
-      const res = await fetch(`/api/users/${user.id}/avatar`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profilePic: url }),
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        dispatch(setUserDetails({ ...user, profilePic: url }));
-        toast.success("Profile picture updated!");
-      } else {
-        toast.error("Failed to update avatar");
-      }
+      const res = await fetch(`${API_URL}/api/search?q=${encodeURIComponent(query)}`);
+      const json = await res.json();
+      if (json.success) setResults(json.data);
+      else setResults([]);
     } catch (err) {
       console.error(err);
-      toast.error("Error uploading avatar");
+      setResults([]);
     } finally {
-      setUploading(false);
+      setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
   };
 
   return (
-    <header className='shadow-md bg-white text-gray-800 fixed w-full z-40 border-b border-gray-200'>
-      {/* Top Row: Logo + Search (desktop) + Actions */}
-      <div className='container mx-auto flex items-center justify-between px-4 h-16'>
-        {/* Logo */}
-        <Link href="/">
-          <Logo width={55} height={55} />
-        </Link>
+    <header className="shadow-md bg-white fixed w-full z-40 border-b border-gray-200">
+      <div className="container mx-auto flex items-center justify-between px-4 h-16">
+        <Link href="/"><Logo width={55} height={55} /></Link>
 
-        {/* Search Bar (desktop only) */}
-        <div className='hidden lg:flex items-center w-full max-w-md border border-gray-300 rounded-full focus-within:shadow-md bg-gray-50 pl-3'>
+        {/* Search */}
+        <div className="relative w-full max-w-md hidden lg:block rounded-full">
           <input
-            type='text'
-            placeholder='Search for products...'
-            className='w-full outline-none text-gray-700 placeholder-gray-500 bg-transparent'
-            onChange={handleSearch}
+            type="text"
+            placeholder="Search products or services..."
+            className="w-full rounded-full pl-4 pr-10 py-2 text-amber-900 border border-gray-300 outline-none focus:ring-2 focus:ring-[#00C2D1]"
             value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
-          <div className='text-lg min-w-[50px] h-9 bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] flex items-center justify-center rounded-r-full text-white hover:opacity-90 transition'>
-            <GrSearch />
-          </div>
+          <GrSearch className="absolute right-3 top-2 text-gray-500 text-lg" />
+
+          {/* Dropdown */}
+          {search && (
+            <div className="absolute top-full left-0 w-full bg-white shadow-lg rounded-b-md max-h-80 overflow-y-auto z-50">
+              {loading ? (
+                <p className="p-3 text-gray-500">Searching...</p>
+              ) : results.length ? (
+                results.map(item => (
+                  <Link
+                    key={item._id}
+                    href={item.type === "service" ? `/service-details/${item.slug}` : `/product/${item.slug}`}
+                    className="block px-4 py-2 hover:bg-gray-100 text-gray-800"
+                    onClick={() => setSearch('')}
+                  >
+                    <span className="font-medium">{item.name}</span> <span className="text-sm text-gray-500">({item.type}{item.category ? `, ${item.category}` : ''})</span>
+                  </Link>
+                ))
+              ) : (
+                <p className="p-3 text-gray-500">No results found</p>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right Section */}
-        <div className='flex items-center gap-5'>
-          {user?.id && (
-            <Link
-              href="/customer-dashboard"
-              className="text-sm font-medium text-[#00C2D1] hover:text-[#7B2CBF] transition"
-            >
-              Dashboard
-            </Link>
-          )}
-
-          {user?.id && (
-            <Link href="/cart" className='text-2xl relative'>
-              <span>
+        <div className="flex items-center gap-5">
+          {user?.id ? (
+            <>
+              <Link href="/customer-dashboard" className="text-sm font-medium text-[#00C2D1] hover:text-[#7B2CBF] transition">Dashboard</Link>
+              <Link href="/cart" className="text-2xl relative">
                 <FaShoppingCart className="text-gray-600 hover:text-[#7B2CBF] transition" />
-              </span>
-              <div className='bg-[#7B2CBF] text-white w-5 h-5 rounded-full p-1 flex items-center justify-center absolute -top-2 -right-3 text-xs'>
-                {context?.cartProductCount}
-              </div>
-            </Link>
-          )}
-
-          {/* Avatar + Edit Icon */}
-          <div className='relative flex justify-center'>
-            {user?.id && (
-              <div className='relative'>
-                {user?.profilePic ? (
-                  <img
-                    src={user?.profilePic}
-                    className='w-10 h-10 rounded-full border-2 border-gray-300 object-cover cursor-pointer'
-                    alt={user?.name}
-                    onClick={() => setMenuDisplay(prev => !prev)}
-                  />
-                ) : (
-                  <FaRegCircleUser
-                    className="text-gray-600 hover:text-[#7B2CBF] transition text-3xl cursor-pointer"
-                    onClick={() => setMenuDisplay(prev => !prev)}
-                  />
-                )}
-
-                {/* Edit (camera) icon */}
-                <label className="absolute bottom-0 right-0 bg-white p-1 rounded-full border shadow cursor-pointer hover:bg-gray-100">
-                  <FaPencil className="text-gray-600 w-1 h-1" />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    hidden
-                    onChange={handleAvatarChange}
-                  />
-                </label>
-
-                {uploading && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-white/70 rounded-full text-xs text-gray-600">
-                    ...
+                {cartProductCount > 0 && (
+                  <div className="bg-[#7B2CBF] text-white w-5 h-5 rounded-full p-1 flex items-center justify-center absolute -top-2 -right-3 text-xs">
+                    {cartProductCount}
                   </div>
                 )}
-              </div>
-            )}
-
-            {/* Dropdown menu */}
-            {menuDisplay && (
-              <div className="absolute bg-white top-11 right-0 h-fit p-2 shadow-lg rounded-md w-40 border border-gray-200">
-                <nav className="flex flex-col space-y-2">
-                  {user?.role === ROLE.ADMIN && (
-                    <Link
-                      href="/admin-panel"
-                      className="block px-4 py-2 rounded text-gray-700 hover:bg-gradient-to-r hover:from-[#00C2D1] hover:to-[#7B2CBF] hover:text-white"
-                      onClick={() => setMenuDisplay(false)}
-                    >
-                      Admin Panel
-                    </Link>
-                  )}
-                </nav>
-              </div>
-            )}
-          </div>
-
-          {/* Auth Button */}
-          <div>
-            {user?.id ? (
-              <button 
-                onClick={handleLogout} 
-                className='px-4 py-1.5 rounded-full text-white bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] hover:opacity-90 transition shadow cursor-pointer'>
-                Logout
-              </button>
-            ) : (
-              <Link 
-                href="/login" 
-                className='px-4 py-1.5 rounded-full text-white bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] hover:opacity-90 transition shadow cursor-pointer'>
-                Login
               </Link>
-            )}
-          </div>
+              <Link href="/profile" className="text-gray-600 hover:text-[#7B2CBF] transition text-3xl cursor-pointer">
+                <FaRegCircleUser />
+              </Link>
+              <button onClick={handleLogout} className="px-4 py-1.5 rounded-full text-white bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] hover:opacity-90 transition shadow cursor-pointer">Logout</button>
+            </>
+          ) : (
+            <Link href="/login" className="px-4 py-1.5 rounded-full text-white bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] hover:opacity-90 transition shadow cursor-pointer">Login</Link>
+          )}
         </div>
       </div>
 
-      {/* Search Bar (Mobile) */}
-      <div className='px-4 pb-3 lg:hidden'>
-        <div className='flex items-center w-full border border-gray-300 rounded-full focus-within:shadow-md bg-gray-50 pl-3'>
-          <input
-            type='text'
-            placeholder='Search for products...'
-            className='w-full outline-none p-2 text-gray-700 placeholder-gray-500 bg-transparent'
-            onChange={handleSearch}
-            value={search}
-          />
-          <div className='text-lg min-w-[50px] h-10 bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] flex items-center justify-center rounded-r-full text-white hover:opacity-90 transition'>
-            <GrSearch />
+      {/* Mobile Search */}
+      <div className="px-4 pb-3 lg:hidden relative text-[#00C2D1]">
+        <input
+          type="text"
+          placeholder="Search products or services..."
+          className="w-full rounded-full pl-4 pr-10 py-2 border border-gray-300 outline-none focus:ring-2 focus:ring-[#00C2D1]"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <GrSearch className="absolute right-3 top-2 text-gray-500 text-lg" />
+
+        {search && (
+          <div className="absolute top-full left-0 w-full bg-white shadow-lg rounded-b-md max-h-80 overflow-y-auto z-50">
+            {loading ? (
+              <p className="p-3 text-gray-500">Searching...</p>
+            ) : results.length ? (
+              results.map(item => (
+                <Link
+                  key={item._id}
+                  href={item.type === "service" ? `/service-details/${item.slug}` : `/product-details/${item.slug}`}
+                  className="block px-4 py-2 hover:bg-gray-100 text-gray-800"
+                  onClick={() => setSearch('')}
+                >
+                  <span className="font-medium">{item.name}</span> <span className="text-sm text-gray-500">({item.type}{item.category ? `, ${item.category}` : ''})</span>
+                </Link>
+              ))
+            ) : (
+              <p className="p-3 text-gray-500">No results found</p>
+            )}
           </div>
-        </div>
+        )}
       </div>
     </header>
   );

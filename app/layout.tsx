@@ -1,16 +1,16 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import { ReduxProvider } from '@/components/ReduxProvider';
 import { ClientLayout } from '@/components/ClientLayout';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'COLLTECH - Tech & Office Supplies | Earphones, Routers, Printers & More',
-  description:
-    'Shop high-quality tech gadgets and office supplies at COLLTECH. From earphones, routers, Bluetooth speakers, and printers to premium office essentials — we are your trusted tech & office partner in Kenya.',
+  description: 'Shop high-quality tech gadgets and office supplies at COLLTECH. From earphones, routers, Bluetooth speakers, and printers to premium office essentials — we are your trusted tech & office partner in Kenya.',
   keywords: [
     'tech gadgets Kenya',
     'office supplies Nairobi',
@@ -20,18 +20,17 @@ export const metadata: Metadata = {
     'printers Kenya',
     'COLLTECH shop'
   ],
-  authors: [{ name: 'COLLTECH Team', url: 'https://colltechhub.com' }],
+  authors: [{ name: 'COLLTECH Team', url: 'https://www.colltechhub.com' }],
   creator: 'COLLTECH',
   publisher: 'COLLTECH',
   openGraph: {
     title: 'COLLTECH - Your Tech & Office Partner',
-    description:
-      'Find premium gadgets and office supplies at affordable prices. Shop earphones, routers, printers, and more at COLLTECH Kenya.',
-    url: process.env.NEXT_PUBLIC_BASE_URL,
+    description: 'Find premium gadgets and office supplies at affordable prices. Shop earphones, routers, printers, and more at COLLTECH Kenya.',
+    url: 'https://www.colltechhub.com',
     siteName: 'COLLTECH',
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/opengraph-image.png`,
+        url: 'https://www.colltechhub.com/opengraph-image.png',
         width: 1200,
         height: 630,
         alt: 'COLLTECH - Tech & Office Supplies',
@@ -43,53 +42,53 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'COLLTECH - Your Tech & Office Partner',
-    description:
-      'Shop tech gadgets & office supplies: earphones, routers, printers & more. COLLTECH is your trusted tech & office partner in Kenya.',
-    images: [`${process.env.NEXT_PUBLIC_BASE_URL}/opengraph-image.png`],
+    description: 'Shop tech gadgets & office supplies: earphones, routers, printers & more. COLLTECH is your trusted tech & office partner in Kenya.',
+    images: ['https://www.colltechhub.com/opengraph-image.png'],
     creator: '@COLLTECH_KE',
   },
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_BASE_URL,
+    canonical: 'https://www.colltechhub.com',
   },
   robots: {
     index: true,
     follow: true,
-    nocache: false,
   },
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
     shortcut: '/favicon.ico',
   },
-  themeColor: '#00C2D1', // Updated to brand primary color
+  themeColor: '#00C2D1',
 };
 
+const BASE_URL = 'https://www.colltechhub.com';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://colltechhub.com';
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Meta verifications */}
+        {/* Verification Meta */}
         <meta name="google-site-verification" content="73p9RpqwG7S8VmzC1VL25-2OArnPVs4dPMiBdyOkXIE" />
         <meta name="yandex-verification" content="YOUR_YANDEX_VERIFICATION_CODE" />
         <meta name="msvalidate.01" content="YOUR_BING_VERIFICATION_CODE" />
 
-        {/* JSON-LD: Organization + Website + BreadcrumbList */}
+        {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify([
+              // Organization
               {
                 "@context": "https://schema.org",
                 "@type": "Organization",
                 "name": "COLLTECH",
-                "url": baseUrl,
-                "logo": `${baseUrl}/logo.png`,
+                "url": BASE_URL,
+                "logo": `${BASE_URL}/logo.png`,
                 "sameAs": [
                   "https://www.facebook.com/share/1AsYch1TgY/",
                   "https://x.com/Colltech_?t=jSzzUB5EdP_scsjNpjkSKA&s=08",
                   "https://www.instagram.com/COLLTECH",
-                  "https://www.tiktok.com/@colltechaccessori?_t=ZM-8yZPmRqhauG&_r=1",
+                  "https://www.tiktok.com/@colltechaccessori?_t=ZM-8yZPmRqhauG&_r=1"
                 ],
                 "contactPoint": [
                   {
@@ -101,23 +100,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   }
                 ]
               },
+              // Website + SearchAction
               {
                 "@context": "https://schema.org",
                 "@type": "WebSite",
-                "url": baseUrl,
+                "url": BASE_URL,
                 "name": "COLLTECH",
                 "potentialAction": {
                   "@type": "SearchAction",
-                  "target": "https://www.colltechhub.com/search-product?q={search_term_string}",
+                  "target": `${BASE_URL}/search-product?q={search_term_string}`,
                   "query-input": "required name=search_term_string"
                 }
               },
+              // BreadcrumbList (Dynamic pages included)
               {
                 "@context": "https://schema.org",
                 "@type": "BreadcrumbList",
                 "itemListElement": [
-                  { "@type": "ListItem", "position": 1, "name": "Home", "item": baseUrl },
-                  { "@type": "ListItem", "position": 2, "name": "Shop", "item": `${baseUrl}/shop` }
+                  { "@type": "ListItem", "position": 1, "name": "Home", "item": BASE_URL },
+                  { "@type": "ListItem", "position": 2, "name": "Shop", "item": `${BASE_URL}/shop` },
+                  { "@type": "ListItem", "position": 3, "name": "Products", "item": `${BASE_URL}/category-product` },
+                  { "@type": "ListItem", "position": 4, "name": "Services", "item": `${BASE_URL}/category-service` }
                 ]
               }
             ]),
@@ -129,9 +132,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         bg-gradient-to-b from-[#00C2D1] via-[#4B3F72] to-[#7B2CBF] 
         text-gray-100 transition-colors duration-500`}
       >
-        <ReduxProvider>
-          <ClientLayout>{children}</ClientLayout>
-        </ReduxProvider>
+        <ClientLayout>{children}</ClientLayout>
+        <ToastContainer />
       </body>
     </html>
   );

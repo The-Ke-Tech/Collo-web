@@ -1,37 +1,29 @@
-'use client';
+'use client'
 
-import React, { useContext } from 'react';
-import scrollTop from '../helpers/scrollTop';
-import displayKESCurrency from '../helpers/displayCurrency';
-import Context from '../context';
-import addToCart from '../helpers/addToCart';
-import Link from 'next/link';
-
-type Product = {
-  id: string;
-  slug: string;
-  productName: string;
-  productImage: string[];
-  category: string;
-  price: number;
-  sellingPrice: number;
-  stock: number;
-};
+import React from 'react'
+import scrollTop from '../helpers/scrollTop'
+import displayKESCurrency from '../helpers/displayCurrency'
+import Link from 'next/link'
+import { Product } from '@/helpers/product-types'
+import { useCartStore } from '@/store/cart-store'
 
 interface VerticalCardProps {
-  data: Product[];
-  loading: boolean;
+  data: Product[]
+  loading: boolean
 }
 
 const VerticalCard: React.FC<VerticalCardProps> = ({ loading, data }) => {
-  const loadingList = new Array(13).fill(null);
-  const { fetchUserAddToCart } = useContext(Context);
+  const loadingList = new Array(13).fill(null)
+
+  // Get cart functions from cart store
+  const fetchCart = useCartStore((state) => state.fetchCart)
+  const addToCart = useCartStore((state) => state.addToCart)
 
   const handleAddToCart = async (e: React.MouseEvent, id: string) => {
-    e.preventDefault();
-    await addToCart(e, id);
-    fetchUserAddToCart();
-  };
+    e.preventDefault()
+    await addToCart(id)
+    await fetchCart() // refresh cart count from backend
+  }
 
   return (
     <div className="bg-gradient-to-b from-[#00C2D1] via-[#4B3F72] to-[#7B2CBF] p-6 rounded-lg">
@@ -56,7 +48,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ loading, data }) => {
             ))
           : data.map((product) => (
               <div
-                key={product.id}
+                key={product._id}
                 className="bg-white rounded-lg shadow-md border border-gray-200 hover:shadow-lg hover:border-[#7B2CBF] transition-all duration-300 flex flex-col"
               >
                 <Link
@@ -101,7 +93,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ loading, data }) => {
                           ? 'bg-gray-400 text-white cursor-not-allowed'
                           : 'bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] hover:opacity-90 text-white transition'
                       }`}
-                      onClick={(e) => product.stock > 0 && handleAddToCart(e, product.id)}
+                      onClick={(e) => product.stock > 0 && handleAddToCart(e, product._id)}
                       disabled={product.stock === 0}
                     >
                       {product.stock === 0 ? 'Unavailable' : 'Add to Cart'}
@@ -119,7 +111,7 @@ const VerticalCard: React.FC<VerticalCardProps> = ({ loading, data }) => {
             ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default VerticalCard;
+export default VerticalCard

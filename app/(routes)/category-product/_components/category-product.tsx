@@ -5,22 +5,14 @@ import VerticalCard from "@/components/vertical-card";
 import productCategory from "@/helpers/productCategory";
 import { useSearchParams, useRouter } from "next/navigation";
 import { FiFilter } from "react-icons/fi";
+import { Product } from "@/helpers/product-types";
 
-type Product = {
-  id: string;
-  slug: string;
-  productName: string;
-  productImage: string[];
-  category: string;
-  price: number;
-  sellingPrice: number;
-  stock: number;
-};
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function CategoryProductClient() {
   const [data, setData] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
-  const [sortBy, setSortBy] = useState("");
+  const [sortBy, setSortBy] = useState(""); // "asc" | "dsc"
   const [filterCategoryList, setFilterCategoryList] = useState<string[]>([]);
   const [selectCategory, setSelectCategory] = useState<Record<string, boolean>>({});
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
@@ -32,55 +24,76 @@ export default function CategoryProductClient() {
   useEffect(() => {
     const categories = searchParams.getAll("category");
     const categoryObject: Record<string, boolean> = {};
-    categories.forEach((cat) => {
-      categoryObject[cat] = true;
-    });
+    categories.forEach((cat) => (categoryObject[cat] = true));
     setSelectCategory(categoryObject);
     setFilterCategoryList(categories);
   }, [searchParams]);
 
-  // Fetch products
+  // Fetch products from backend
   const fetchData = async () => {
     setLoading(true);
-    const response = await fetch("/api/products/filter", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ category: filterCategoryList || [] }),
-    });
-    const dataResponse = await response.json();
-    setData(dataResponse?.data || []);
-    setLoading(false);
+    try {
+      const response = await fetch(`${API_URL}/api/products/filter`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category: filterCategoryList }),
+      });
+
+      const dataResponse = await response.json();
+      if (dataResponse.success) {
+        // Map backend data to frontend Product type
+        const products: Product[] = dataResponse.data.map((p: any) => ({
+          id: p._id,
+          slug: p.slug || "",              // ensure string
+          productName: p.productName || "",
+          productImage: p.productImage || [],
+          category: p.category || "",
+          price: p.price ?? 0,
+          sellingPrice: p.sellingPrice ?? 0,
+          stock: p.stock ?? 0,
+        }));
+
+        // Apply client-side sorting
+        if (sortBy === "asc") {
+          products.sort((a, b) => a.sellingPrice - b.sellingPrice);
+        } else if (sortBy === "dsc") {
+          products.sort((a, b) => b.sellingPrice - a.sellingPrice);
+        }
+
+        setData(products);
+      } else {
+        setData([]);
+      }
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchData();
-  }, [filterCategoryList]);
+  }, [filterCategoryList, sortBy]);
 
   // Handle category selection
   const handleSelectCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
-    setSelectCategory((prev) => ({
-      ...prev,
-      [value]: checked,
-    }));
+    setSelectCategory((prev) => ({ ...prev, [value]: checked }));
   };
 
   // Update URL & filter list when category changes
   useEffect(() => {
     const activeCategories = Object.keys(selectCategory).filter((key) => selectCategory[key]);
     setFilterCategoryList(activeCategories);
+
     const queryString = activeCategories.map((cat) => `category=${cat}`).join("&");
     router.push(`/category-product?${queryString}`);
   }, [selectCategory]);
 
-  // Handle sorting
+  // Handle sort change
   const handleOnChangeSortBy = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setSortBy(value);
-    const sorted = [...data].sort((a, b) =>
-      value === "asc" ? a.sellingPrice - b.sellingPrice : b.sellingPrice - a.sellingPrice
-    );
-    setData(sorted);
+    setSortBy(e.target.value);
   };
 
   const SidebarFilters = (
@@ -163,15 +176,11 @@ export default function CategoryProductClient() {
           </p>
           <div>
             {loading ? (
-              <p className="col-span-full text-center text-gray-400 py-10">
-                Loading products...
-              </p>
+              <p className="col-span-full text-center text-gray-400 py-10">Loading products...</p>
             ) : data.length > 0 ? (
               <VerticalCard data={data} loading={loading} />
             ) : (
-              <p className="col-span-full text-center text-gray-400 py-10">
-                No products found.
-              </p>
+              <p className="col-span-full text-center text-gray-400 py-10">No products found.</p>
             )}
           </div>
         </div>

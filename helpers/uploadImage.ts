@@ -1,6 +1,6 @@
 const url = "https://api.cloudinary.com/v1_1/dqtmsllzn/image/upload";
 
-const uploadImage = async (image: File): Promise<string> => {
+const uploadImage = async (image: File, p0: (progress: number) => void): Promise<string> => {
   const formData = new FormData();
   formData.append("file", image);
   formData.append("upload_preset", "coltec");

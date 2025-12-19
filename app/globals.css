@@ -28,3 +28,18 @@ body {
 html {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+@keyframes pulse-spike {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.7);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 15px rgba(0, 255, 255, 0);
+  }
+}
+
+.animate-pulse-spike {
+  animation: pulse-spike 2s infinite;
+}

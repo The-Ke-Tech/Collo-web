@@ -1,18 +1,11 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import VerticalCard from "@/components/vertical-card";
+import { Product } from "@/helpers/product-types";
 
-type Product = {
-  id: string;
-  slug: string;
-  productName: string;
-  productImage: string[];
-  category: string;
-  price: number;
-  sellingPrice: number;
-  stock: number;
-};
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function SearchProductClient() {
   const router = useRouter();
@@ -25,11 +18,34 @@ export default function SearchProductClient() {
     const handler = setTimeout(() => {
       const fetchProducts = async () => {
         if (!query.trim()) return setResults([]);
+
         setLoading(true);
+
         try {
-          const res = await fetch(`/api/search-product?q=${encodeURIComponent(query)}`);
-          const data: unknown = await res.json();
-          setResults(Array.isArray(data) ? (data as Product[]) : []);
+          const res = await fetch(
+            `${API_URL}/api/products/search?q=${encodeURIComponent(query)}`,
+            { cache: "no-store" }
+          );
+          const data = await res.json();
+
+          // FIX: Map `_id` instead of `id`
+          const products: Product[] = (Array.isArray(data) ? data : []).map((p: any) => ({
+            _id: p._id ?? p.id ?? "",
+            slug: p.slug,
+            productName: p.productName,
+            productImage: p.productImage,
+            category: p.category,
+            price: p.price,
+            sellingPrice: p.sellingPrice,
+            stock: p.stock,
+            brandName: p.brandName ?? "",
+            description: p.description ?? "",
+            createdBy: p.createdBy ?? "",
+            createdAt: p.createdAt ?? new Date().toISOString(),
+            updatedAt: p.updatedAt ?? new Date().toISOString(),
+          }));
+
+          setResults(products);
         } catch (error) {
           console.error("Search failed:", error);
           setResults([]);
@@ -37,7 +53,9 @@ export default function SearchProductClient() {
           setLoading(false);
         }
       };
+
       fetchProducts();
+
       router.replace(`/search-product?q=${encodeURIComponent(query)}`);
     }, 400);
 
@@ -57,7 +75,7 @@ export default function SearchProductClient() {
         <p className="text-gray-500">No results found for "{query}".</p>
       )}
 
-      <VerticalCard loading={loading} data={results as Product[]} />
+      <VerticalCard loading={loading} data={results} />
     </div>
   );
 }

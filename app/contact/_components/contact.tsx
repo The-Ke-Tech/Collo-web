@@ -4,6 +4,8 @@ import PageLayout from "@/components/page-layout";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL; // ✅ Use environment variable
+
 export default function ContactClient() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [loading, setLoading] = useState(false);
@@ -12,19 +14,22 @@ export default function ContactClient() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch(`${API_URL}/api/contact`, { // ✅ Use API_URL
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+
       const data = await res.json();
+
       if (res.ok) {
-        toast.success(data.message);
+        toast.success(data.message || "Message sent successfully");
         setForm({ name: "", email: "", message: "" });
       } else {
         toast.error(data.message || "Failed to send message");
       }
-    } catch {
+    } catch (err) {
+      console.error("Contact form error:", err);
       toast.error("Network error. Please try again.");
     } finally {
       setLoading(false);

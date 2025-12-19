@@ -1,12 +1,11 @@
-import BannerProduct from '@/components/BannerProduct'
 import CategoryList from '@/components/CategoryList'
 import HorizontalCardProduct from '@/components/HorizontalCardProduct'
 import VerticalCardProduct from '@/components/VerticalCardProduct'
 import React from 'react'
 import { Metadata } from 'next'
 import AnimatedHeading from '@/components/home-header'
-import BannerPage from '@/components/banner'
 import ClientBanners from '@/components/client-banners'
+import ServiceSection from '@/components/services'
 
 export const metadata: Metadata = {
   title: 'COLLTECH - Tech Gadgets & Office Supplies in Kenya',
@@ -54,74 +53,77 @@ export default function Page() {
 
   return (
     <div>
-      {/* Main H1 for SEO */}
-      <AnimatedHeading />
+      {/* Page Title for SEO */}
+      <h1 className="sr-only">
+        COLLTECH: Tech Gadgets & Office Supplies in Kenya
+      </h1>
 
+      {/* Animated Header inside a container */}
+      <div className="container mx-auto px-0.5 mt-6">
+        <AnimatedHeading />
+      </div>
 
-      {/* JSON-LD: Website */}
+      {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "url": baseUrl,
-            "name": "COLLTECH",
-            "potentialAction": {
-              "@type": "SearchAction",
-              "target": `${baseUrl}/search-product?q={search_term_string}`,
-              "query-input": "required name=search_term_string"
-            }
-          }),
-        }}
-      />
-
-      {/* JSON-LD: Organization */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "COLLTECH",
-            "url": baseUrl,
-            "logo": `${baseUrl}/logo.png`,
-            "sameAs": [
-              "https://www.facebook.com/share/1AsYch1TgY/",
-              "https://x.com/Colltech_?t=jSzzUB5EdP_scsjNpjkSKA&s=08",
-              "https://www.instagram.com/COLLTECH",
-              "https://www.tiktok.com/@colltechaccessori?_t=ZM-8yZPmRqhauG&_r=1",
-            ],
-            "contactPoint": [
-              {
-                "@type": "ContactPoint",
-                "telephone": "+254728619730",
-                "contactType": "Customer Support",
-                "areaServed": "KE",
-                "availableLanguage": "en"
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "url": baseUrl,
+              "name": "COLLTECH",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": `${baseUrl}/search-product?q={search_term_string}`,
+                "query-input": "required name=search_term_string"
               }
-            ]
-          }),
-        }}
-      />
-
-      {/* JSON-LD: Breadcrumbs */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Home", "item": baseUrl }
-            ]
-          }),
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "COLLTECH",
+              "url": baseUrl,
+              "logo": `${baseUrl}/logo.png`,
+              "sameAs": [
+                "https://www.facebook.com/share/1AsYch1TgY/",
+                "https://x.com/Colltech_?t=jSzzUB5EdP_scsjNpjkSKA&s=08",
+                "https://www.instagram.com/COLLTECH",
+                "https://www.tiktok.com/@colltechaccessori?_t=ZM-8yZPmRqhauG&_r=1"
+              ],
+              "contactPoint": [
+                {
+                  "@type": "ContactPoint",
+                  "telephone": "+254728619730",
+                  "contactType": "Customer Support",
+                  "areaServed": "KE",
+                  "availableLanguage": ["en", "sw"]
+                }
+              ]
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                { "@type": "ListItem", "position": 1, "name": "Home", "item": baseUrl },
+                { "@type": "ListItem", "position": 2, "name": "Shop", "item": `${baseUrl}/shop` },
+                { "@type": "ListItem", "position": 3, "name": "Categories", "item": `${baseUrl}/category-product` },
+                { "@type": "ListItem", "position": 4, "name": "Services", "item": `${baseUrl}/category-service` }
+              ]
+            }
+          ])
         }}
       />
 
       {/* Components */}
       <CategoryList />
-      <ClientBanners />
+
+      <div className="container w-full mt-6 overflow-hidden">
+        <ClientBanners />
+      </div>
+
+      {/* Client-only Services Section */}
+      <ServiceSection />
 
       <section>
         <h2 className="text-2xl font-semibold text-white mt-10 mb-4 text-center">

@@ -1,29 +1,37 @@
-// app/admin-panel/page.tsx
-import { cookies } from 'next/headers';
-import { jwtVerify } from 'jose';
-import { redirect } from 'next/navigation';
-import ROLE from '@/common/role';
-import AdminPanel from './adminpanel';
+"use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import AdminPanel from "./_components/adminpanel";
+import { useAuthStore } from "@/store/auth-store";
 
-export default async function AdminPanelPage() {
-  const token = (await cookies()).get('token')?.value;
-  if (!token) redirect('/login');
+// Define roles (can also be centralized in a common file)
+const ROLE = {
+  USER: "user",
+  ADMIN: "admin",
+  SUPER_ADMIN: "super-admin",
+} as const;
 
-  const secret = new TextEncoder().encode(process.env.TOKEN_SECRET_KEY);
-  let payload: { name: string, role: string, profilePic: string };
-  try {
-    const { payload: decoded } = await jwtVerify(token, secret) as { payload: { name: string, role: string, profilePic: string } };
-    payload = decoded;
-  } catch {
-    redirect('/login');
+export default function AdminPanelPage() {
+  const router = useRouter();
+  const { token, user } = useAuthStore();
+
+  // ✅ Allow both admin and super-admin
+  const isAdminOrSuperAdmin =
+    user?.role === ROLE.ADMIN || user?.role === ROLE.SUPER_ADMIN;
+
+  useEffect(() => {
+    if (!token || !user) {
+      router.push("/login");
+    } else if (!isAdminOrSuperAdmin) {
+      router.push("/unauthorized");
+    }
+  }, [token, user, isAdminOrSuperAdmin, router]);
+
+  // While loading user/token info
+  if (!token || !user || !isAdminOrSuperAdmin) {
+    return <p className="text-white">Loading...</p>;
   }
 
-  if (payload.role !== ROLE.ADMIN) redirect('/unauthorized');
-
-  return <AdminPanel user={{
-    name: payload.name,
-    role: payload.role,
-    profilePic: payload.profilePic,
-  }} />;
+  return <AdminPanel user={user} />;
 }
