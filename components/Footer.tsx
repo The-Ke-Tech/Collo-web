@@ -83,6 +83,7 @@ const Footer = () => {
             <li><Link href="/support" className="hover:text-[#7B2CBF] transition">Help & Support</Link></li>
             <li><Link href="/returns" className="hover:text-[#7B2CBF] transition">Returns & Refunds</Link></li>
             <li><Link href="/contact" className="hover:text-[#7B2CBF] transition">Contact Us</Link></li>
+            <li><Link href="/delete-account" className="hover:text-[#7B2CBF] transition">Revoke Account</Link></li>
           </ul>
         </div>
       </div>
