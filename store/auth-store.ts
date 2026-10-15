@@ -45,6 +45,11 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "";
 
 let refreshTimer: ReturnType<typeof setTimeout> | null = null;
 
+// Guards against refresh loops: only ONE refresh request at a time, and never more than one every 10s
+let refreshInFlight: Promise<string | null> | null = null;
+let lastRefreshAt = 0;
+const MIN_REFRESH_GAP = 10000;
+
 /* =======================
    Helpers
 ======================= */
@@ -69,7 +74,12 @@ const scheduleTokenRefresh = (token: string, refreshFn: () => void) => {
   if (refreshTimer) clearTimeout(refreshTimer);
 
   if (refreshTime <= 0) {
-    refreshFn();
+    // Token is about to expire (or a very short-lived token was issued). Refresh now - but if we
+    // just refreshed, wait instead of hammering the server. Without this guard a short-lived token
+    // made the app refresh, re-render and re-fetch in an endless loop (the page "blinked").
+    const wait = Math.max(0, MIN_REFRESH_GAP - (Date.now() - lastRefreshAt));
+    if (wait === 0) refreshFn();
+    else refreshTimer = setTimeout(refreshFn, wait);
   } else {
     refreshTimer = setTimeout(refreshFn, refreshTime);
   }
@@ -89,8 +99,18 @@ export const useAuthStore = create<AuthState>()(
         }
       };
 
-      const refreshAccessToken = async (): Promise<string | null> => {
+      const refreshAccessToken = (): Promise<string | null> => {
+        // Share one in-flight request between all callers
+        if (refreshInFlight) return refreshInFlight;
+        refreshInFlight = doRefreshAccessToken().finally(() => {
+          refreshInFlight = null;
+        });
+        return refreshInFlight;
+      };
+
+      const doRefreshAccessToken = async (): Promise<string | null> => {
         if (!get().token) return null;
+        lastRefreshAt = Date.now();
 
         try {
           const res = await fetch(`${API_URL}/api/auth/refresh`, {

@@ -23,42 +23,46 @@ interface ServiceCardProps {
 
 const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition flex flex-col overflow-hidden">
-      
-      {/* Service Image */}
+    // h-full + w-full so every card in a row has the same height and fills its slide
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-md bg-white shadow-sm transition hover:shadow-md sm:rounded-lg">
       {service.serviceImage && service.serviceImage.length > 0 ? (
-        <div className="w-full h-35 md:h-55 bg-gray-100 overflow-hidden">
+        <div className="aspect-[4/3] w-full overflow-hidden bg-gray-100">
           <img
             src={service.serviceImage[0]}
             alt={service.serviceName}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
           />
         </div>
       ) : (
-        <div className="w-full h-56 md:h-64 bg-gray-200 flex items-center justify-center text-gray-400">
+        <div className="flex aspect-[4/3] w-full items-center justify-center bg-gray-200 text-[10px] text-gray-400 sm:text-xs">
           No Image
         </div>
       )}
 
-      {/* Service Details */}
-      <div className="p-2 md:p-3 flex flex-col flex-1 justify-between">
+      <div className="flex flex-1 flex-col justify-between gap-1 p-1 sm:p-2 md:p-2.5">
         <div>
-          <h3 className="text-lg md:text-xl font-bold text-gray-900 line-clamp-2">{service.serviceName}</h3>
-          <p className="text-sm text-gray-500 capitalize mt-1">{service.category}</p>
+          <h3 className="line-clamp-2 text-[10px] font-bold leading-tight text-gray-900 sm:text-xs md:text-[13px] lg:text-sm">
+            {service.serviceName}
+          </h3>
+          <p className="mt-0.5 line-clamp-1 text-[8px] capitalize text-gray-500 sm:text-[10px] md:text-xs">
+            {service.category}
+          </p>
         </div>
 
-        <div className="mt-4 flex items-center justify-between flex-wrap gap-2">
-          <span className="text-[#7B2CBF] font-bold text-lg">
+        <div className="flex flex-col gap-1 sm:gap-1.5">
+          <span className="text-[10px] font-bold leading-tight text-[#7B2CBF] sm:text-xs md:text-[13px] lg:text-sm">
             {service.startingFrom ? 'From ' : ''}
             {displayKESCurrency(service.price)}
             {service.unitLabel ? ` / ${service.unitLabel}` : ''}
           </span>
 
+          {/* 👆 Full-width, thumb-sized View button so it stays easy to tap on any screen */}
           <Link
             href={`/service-details/${service.slug}`}
-            className="bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] text-white px-4 py-2 rounded-full text-sm font-medium hover:opacity-90 transition"
+            className="flex min-h-7 w-full items-center justify-center rounded-md bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] px-1 py-1 text-[9px] font-semibold text-white transition hover:opacity-90 active:scale-95 sm:min-h-8 sm:text-xs md:text-[13px]"
           >
-            View Service
+            View
           </Link>
         </div>
       </div>

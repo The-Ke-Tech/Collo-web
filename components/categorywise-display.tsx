@@ -12,7 +12,8 @@ interface CategoryWiseProductDisplayProps {
 }
 
 interface Product {
-  id: string;
+  id?: string;   // some responses use `id`...
+  _id?: string;  // ...the backend (MongoDB) sends `_id`
   slug: string;
   productImage: string[];
   productName: string;
@@ -54,71 +55,84 @@ const CategoryWiseProductDisplay = ({
     fetchData();
   }, [category]);
 
-  return (
-    <div className="bg-gradient-to-b from-[#00C2D1] via-[#4B3F72] to-[#7B2CBF] py-10 px-6 my-8 rounded-xl shadow-lg">
-      <h2 className="text-3xl font-bold py-4 text-white">{heading}</h2>
+  // 📱 Small screens: ONE horizontal swipe row of small cards (snap scrolling).
+  // sm and up: a compact auto-fitting grid.
+  const rowClass =
+    "flex gap-2 overflow-x-auto snap-x snap-mandatory scrollbar-none -mx-1 px-1 pb-1 " +
+    "sm:mx-0 sm:px-0 sm:pb-0 sm:grid sm:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] sm:gap-3 sm:overflow-visible " +
+    "lg:grid-cols-[repeat(auto-fill,minmax(170px,1fr))] lg:gap-4";
+  const cardSize = "w-[128px] shrink-0 snap-start sm:w-auto sm:shrink";
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+  return (
+    <div className="bg-gradient-to-b from-[#00C2D1] via-[#4B3F72] to-[#7B2CBF] py-3 px-2.5 sm:py-5 sm:px-4 my-3 sm:my-5 rounded-xl shadow-lg">
+      <h2 className="text-base sm:text-xl lg:text-2xl font-bold pb-2 sm:pb-3 text-white">{heading}</h2>
+
+      <div className={rowClass}>
         {loading
           ? loadingList.map((_, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-md p-4 animate-pulse">
-                <div className="bg-gray-300 h-48 rounded-md"></div>
-                <div className="mt-4 space-y-3">
+              <div key={index} className={`${cardSize} bg-white rounded-lg shadow-md p-2 animate-pulse`}>
+                <div className="bg-gray-300 h-20 sm:h-28 rounded-md"></div>
+                <div className="mt-2 space-y-2">
+                  <div className="h-3 bg-gray-300 rounded"></div>
+                  <div className="h-3 bg-gray-300 rounded w-2/3"></div>
                   <div className="h-6 bg-gray-300 rounded"></div>
-                  <div className="h-4 bg-gray-300 rounded"></div>
-                  <div className="h-4 bg-gray-300 rounded"></div>
-                  <div className="h-8 bg-gray-300 rounded"></div>
                 </div>
               </div>
             ))
-          : data.map((product) => (
+          : data.map((product, index) => {
+              // The API returns `_id` (not `id`), so the old key={product.id} was undefined -> React key warning,
+              // and "Add to Cart" received undefined. Use whichever id exists, with safe fallbacks for the key.
+              const productId = (product._id ?? product.id) as string;
+              return (
               <Link
-                key={product.id}
+                key={productId ?? product.slug ?? index}
                 href={`/product-details/${product.slug}`}
-                className="bg-white rounded-lg shadow-md hover:shadow-xl hover:border-[#7B2CBF] border border-gray-200 transition-all flex flex-col"
+                className={`${cardSize} bg-white rounded-lg shadow-md hover:shadow-xl hover:border-[#7B2CBF] border border-gray-200 transition-all flex flex-col`}
               >
                 {/* Image */}
-                <div className="bg-gray-50 h-52 flex justify-center items-center relative rounded-t-lg overflow-hidden">
+                <div className="bg-gray-50 h-20 sm:h-32 lg:h-36 flex justify-center items-center relative rounded-t-lg overflow-hidden p-1">
                   <img
                     src={product.productImage[0]}
                     alt={product.productName}
+                    loading="lazy"
                     className="object-contain h-full max-w-full hover:scale-105 transition-transform duration-300"
                   />
                   {product.stock === 0 && (
-                    <span className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded">
+                    <span className="absolute top-1 left-1 bg-red-600 text-white text-[9px] sm:text-xs px-1.5 py-0.5 rounded">
                       Out of Stock
                     </span>
                   )}
                 </div>
 
                 {/* Content */}
-                <div className="p-4 flex flex-col gap-2 flex-1">
-                  <h2 className="font-semibold text-lg text-gray-900 line-clamp-2 hover:text-[#7B2CBF] transition">
+                <div className="p-2 sm:p-3 flex flex-col gap-1 flex-1">
+                  <h2 className="font-semibold text-xs sm:text-sm text-gray-900 line-clamp-2 leading-tight hover:text-[#7B2CBF] transition">
                     {product.productName}
                   </h2>
-                  <p className="capitalize text-gray-500 text-sm">{product.category}</p>
-                  <div className="flex gap-3 items-center mt-1">
-                    <p className="text-[#7B2CBF] font-bold text-lg">
+                  <p className="hidden sm:block capitalize text-gray-500 text-xs">{product.category}</p>
+                  <div className="flex flex-wrap gap-x-2 items-baseline">
+                    <p className="text-[#7B2CBF] font-bold text-xs sm:text-base">
                       {displayKESCurrency(product.sellingPrice)}
                     </p>
-                    <p className="text-gray-400 line-through text-sm">
+                    <p className="text-gray-400 line-through text-[10px] sm:text-xs">
                       {displayKESCurrency(product.price)}
                     </p>
                   </div>
                   <button
-                    className={`mt-auto text-sm px-4 py-2 rounded-md font-medium shadow ${
+                    className={`mt-auto w-full text-[11px] sm:text-sm px-2 py-1.5 rounded-md font-medium shadow ${
                       product.stock === 0
                         ? "bg-gray-400 text-white cursor-not-allowed"
-                        : "bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] hover:opacity-90 text-white transition"
+                        : "bg-gradient-to-r from-[#00C2D1] to-[#7B2CBF] hover:opacity-90 text-white transition active:scale-95"
                     }`}
-                    onClick={(e) => product.stock > 0 && handleAddToCart(e, product.id)}
+                    onClick={(e) => product.stock > 0 && handleAddToCart(e, productId)}
                     disabled={product.stock === 0}
                   >
                     {product.stock === 0 ? "Unavailable" : "Add to Cart"}
                   </button>
                 </div>
               </Link>
-            ))}
+              );
+            })}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { ClientLayout } from '@/components/ClientLayout';
@@ -8,7 +8,13 @@ import "react-toastify/dist/ReactToastify.css";
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
+// Modern independent viewport object module export keeping your exact theme color configuration intact
+export const viewport: Viewport = {
+  themeColor: '#00C2D1',
+};
+
 export const metadata: Metadata = {
+  metadataBase: new URL('http://localhost:3000'),
   title: 'COLLTECH - Tech & Office Supplies | Earphones, Routers, Printers & More',
   description: 'Shop high-quality tech gadgets and office supplies at COLLTECH. From earphones, routers, Bluetooth speakers, and printers to premium office essentials — we are your trusted tech & office partner in Kenya.',
   keywords: [
@@ -58,7 +64,6 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
     shortcut: '/favicon.ico',
   },
-  themeColor: '#00C2D1',
 };
 
 const BASE_URL = 'https://www.colltechhub.com';
@@ -133,7 +138,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         text-gray-100 transition-colors duration-500`}
       >
         <ClientLayout>{children}</ClientLayout>
-        <ToastContainer />
+        <ToastContainer position="top-center" />
       </body>
     </html>
   );
