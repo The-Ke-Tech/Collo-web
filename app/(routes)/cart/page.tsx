@@ -136,6 +136,14 @@ const Cart = () => {
     router.push(`/product-details/${slug}`);
   };
 
+  // Cart product types may not include slug in every API response.
+  // Read it safely without changing the existing cart product type.
+  const getProductSlug = (product: unknown): string | undefined => {
+    if (!product || typeof product !== "object") return undefined;
+    const slug = (product as { slug?: unknown }).slug;
+    return typeof slug === "string" ? slug : undefined;
+  };
+
   const scrollByAmount = (dir: number) => {
 
     const el = scrollRef.current;
@@ -478,17 +486,17 @@ const Cart = () => {
 
                         key={product.productId}
 
-                        role={product.product?.slug ? "link" : undefined}
-                        tabIndex={product.product?.slug ? 0 : undefined}
+                        role={getProductSlug(product.product) ? "link" : undefined}
+                        tabIndex={getProductSlug(product.product) ? 0 : undefined}
                         onClick={(event) => {
                           if ((event.target as HTMLElement).closest("button")) return;
-                          openProductDetails(product.product?.slug);
+                          openProductDetails(getProductSlug(product.product));
                         }}
                         onKeyDown={(event) => {
-                          if (!product.product?.slug) return;
+                          if (!getProductSlug(product.product)) return;
                           if (event.key === "Enter" || event.key === " ") {
                             event.preventDefault();
-                            openProductDetails(product.product.slug);
+                            openProductDetails(getProductSlug(product.product));
                           }
                         }}
                         className="flex-shrink-0 w-[120px] sm:w-[150px] bg-gradient-to-br from-cyan-900 to-purple-900 border border-purple-700/50 rounded-lg overflow-hidden hover:border-cyan-500/60 transition-all group cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400"
